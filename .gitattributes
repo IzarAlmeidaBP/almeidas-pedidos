@@ -1,0 +1,8 @@
+# Fim de linha LF em todos os arquivos de texto (o Prettier espera LF).
+* text=auto eol=lf
+
+# Mídia
+*.png binary
+*.jpg binary
+*.webp binary
+*.mp4 binary

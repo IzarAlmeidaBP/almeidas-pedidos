@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+/* Celular deitado (paisagem com pouca altura): classe deitado:... */
+@custom-variant deitado (@media (orientation: landscape) and (max-height: 500px));
+
+/* Tema da marca. */
+@theme {
+  /* Cores exatas do logo. */
+  --color-verde: #0c451e;
+  --color-verde-escuro: #1c3213;
+  --color-vinho: #a3384a;
+  --color-rosa-claro: #fff1f4;
+  /* Derivadas (não estão no logo). */
+  --color-vinho-escuro: #862c3c;
+  --color-rosa: #e8a0ae;
+  --color-creme: #fbf6f0;
+  --color-creme-escuro: #f1e7da;
+  --color-tinta: #3a2a2d;
+  /* Verde do WhatsApp escurecido para o texto branco ter contraste. */
+  --color-whatsapp: #0f7a45;
+  --color-whatsapp-escuro: #0b5f35;
+
+  /* Largura máxima do conteúdo no computador (~1100px): classe max-w-site. */
+  --container-site: 68.75rem;
+
+  --font-titulo: "Dancing Script", "Brush Script MT", cursive;
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+
+  --animate-pulsar: pulsar 0.35s ease-out;
+  --animate-surgir: surgir 0.4s ease-out both;
+
+  @keyframes pulsar {
+    0% {
+      transform: scale(1);
+    }
+    45% {
+      transform: scale(1.12);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes surgir {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-creme font-sans text-tinta antialiased;
+    /* Área segura do iPhone (notch em retrato e em paisagem). A barra fixa e o
+       rodapé cuidam da borda de baixo. */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-vinho;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
