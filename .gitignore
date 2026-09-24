@@ -1,0 +1,31 @@
+# Dependências e build
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+
+# Variáveis de ambiente
+.env
+.env.*
+
+# Originais das fotos/vídeos (HEIC/MOV), fora do Git
+assets-originais/
+
+# Deploy
+.netlify/
+.vercel/
+
+# SO / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.log
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
