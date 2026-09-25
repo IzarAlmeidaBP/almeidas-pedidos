@@ -9,8 +9,8 @@ const pedidoEntrega: Pedido = {
   dados: {
     ...DADOS_VAZIOS,
     nome: "Maria",
-    forma: "entrega",
-    endereco: "Rua X, 123 – Bairro",
+    bairro: "Catolé",
+    endereco: "Rua X, 123",
     referencia: "perto da padaria",
     data: "2026-09-26",
     horario: "15:00",
@@ -31,7 +31,8 @@ describe("montarMensagem (contrato com a loja)", () => {
         "*Total: R$ 50,00*",
         "",
         "Nome: Maria",
-        "Endereço: Rua X, 123 – Bairro",
+        "Bairro: Catolé",
+        "Endereço: Rua X, 123",
         "Referência: perto da padaria",
         "Data/horário: 26/09 às 15h",
         "Obs: é presente",
@@ -41,25 +42,29 @@ describe("montarMensagem (contrato com a loja)", () => {
     );
   });
 
-  it("na retirada omite endereço, referência e linha de entrega", () => {
+  it("usa a taxa do bairro escolhido (bairro de R$ 10,00)", () => {
     const pedido: Pedido = {
       quantidades: { branco: 0, preto: 3 },
       dados: {
         ...pedidoEntrega.dados,
-        forma: "retirada",
+        bairro: "Bodocongó",
         horario: "09:30",
         observacoes: "  ",
       },
     };
     expect(montarMensagem(pedido, LOJA)).toBe(
       [
-        "🍓 NOVO PEDIDO – RETIRADA",
+        "🍓 NOVO PEDIDO – ENTREGA",
         "",
         "3x Morango preto",
         "Subtotal: R$ 42,00",
-        "*Total: R$ 42,00*",
+        "Entrega: R$ 10,00",
+        "*Total: R$ 52,00*",
         "",
         "Nome: Maria",
+        "Bairro: Bodocongó",
+        "Endereço: Rua X, 123",
+        "Referência: perto da padaria",
         "Data/horário: 26/09 às 9h30",
         "",
         "Segue o comprovante do Pix 👇",
@@ -81,11 +86,14 @@ describe("montarMensagem (contrato com a loja)", () => {
     expect(msg).not.toContain("Obs:");
   });
 
-  it("usa preço e taxa da configuração recebida", () => {
+  it("usa preço e taxas da configuração recebida", () => {
     const msg = montarMensagem(pedidoEntrega, {
       ...LOJA,
       precoUnidade: 15.5,
-      taxaEntrega: 10,
+      entrega: {
+        faixas: [{ taxa: 10, descricao: "", bairros: ["Catolé"] }],
+        consultar: [],
+      },
     });
     expect(msg).toContain("Subtotal: R$ 46,50");
     expect(msg).toContain("Entrega: R$ 10,00");

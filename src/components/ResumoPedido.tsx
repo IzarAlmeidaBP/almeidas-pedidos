@@ -5,13 +5,9 @@ import { usePedido } from "../state/PedidoContext";
 
 /** Resumo lateral do computador (fica visível enquanto o cliente rola a página). */
 export function ResumoPedido() {
-  const { estado, dispatch, totais, valido } = usePedido();
-  const { quantidades, dados } = estado;
+  const { estado, dispatch, totais, entrega, valido } = usePedido();
+  const { quantidades } = estado;
   const itens = LOJA.sabores.filter((s) => (quantidades[s.id] ?? 0) > 0);
-
-  let linhaRecebimento = "Escolha em Seus dados";
-  if (dados.forma === "entrega") linhaRecebimento = formatarReais(totais.taxaEntrega);
-  if (dados.forma === "retirada") linhaRecebimento = "Sem taxa";
 
   return (
     <section
@@ -48,9 +44,21 @@ export function ResumoPedido() {
           <dt>Subtotal</dt>
           <dd className="tabular-nums">{formatarReais(totais.subtotal)}</dd>
         </div>
+        {entrega.tipo !== "sem-bairro" && entrega.bairro && (
+          <div className="flex justify-between gap-3">
+            <dt>Bairro</dt>
+            <dd className="text-right">{entrega.bairro}</dd>
+          </div>
+        )}
         <div className="flex justify-between gap-3">
-          <dt>{dados.forma === "retirada" ? "Retirada" : "Entrega"}</dt>
-          <dd className="text-right tabular-nums">{linhaRecebimento}</dd>
+          <dt>Entrega</dt>
+          <dd className="text-right tabular-nums">
+            {entrega.tipo === "com-taxa"
+              ? formatarReais(totais.taxaEntrega)
+              : entrega.tipo === "consultar"
+                ? "A consultar"
+                : "Escolha o bairro"}
+          </dd>
         </div>
       </dl>
 

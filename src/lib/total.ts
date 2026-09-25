@@ -1,7 +1,7 @@
 import type { ConfigLoja } from "../types/loja";
-import type { FormaRecebimento, Quantidades, Totais } from "../types/pedido";
+import type { Quantidades, Totais } from "../types/pedido";
 
-export type ConfigPreco = Pick<ConfigLoja, "precoUnidade" | "taxaEntrega" | "sabores">;
+export type ConfigPreco = Pick<ConfigLoja, "precoUnidade" | "sabores">;
 
 /** Soma só os sabores que existem na config, ignorando valores inválidos. */
 export function contarItens(quantidades: Quantidades, config: ConfigPreco): number {
@@ -11,16 +11,18 @@ export function contarItens(quantidades: Quantidades, config: ConfigPreco): numb
   }, 0);
 }
 
-/** Calcula em centavos para evitar erro de arredondamento. */
+/**
+ * Todo pedido é entrega: a taxa do bairro (ver `taxaDaEntrega`) entra sempre que
+ * houver pelo menos 1 item. Calcula em centavos para evitar erro de arredondamento.
+ */
 export function calcularTotais(
   quantidades: Quantidades,
-  forma: FormaRecebimento | "",
+  taxaEntrega: number,
   config: ConfigPreco,
 ): Totais {
   const itens = contarItens(quantidades, config);
   const subtotalCentavos = itens * Math.round(config.precoUnidade * 100);
-  const taxaCentavos =
-    forma === "entrega" && itens > 0 ? Math.round(config.taxaEntrega * 100) : 0;
+  const taxaCentavos = itens > 0 ? Math.round(taxaEntrega * 100) : 0;
   return {
     itens,
     subtotal: subtotalCentavos / 100,

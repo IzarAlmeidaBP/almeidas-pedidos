@@ -6,6 +6,7 @@ import {
   type AcaoPedido,
   type EstadoPedido,
 } from "../lib/pedidoReducer";
+import { resolverEntrega, taxaDaEntrega, type Entrega } from "../lib/entrega";
 import { calcularTotais } from "../lib/total";
 import { validarPedido, type ErrosPedido } from "../lib/validacao";
 import type { Totais } from "../types/pedido";
@@ -14,6 +15,7 @@ interface ValorContexto {
   estado: EstadoPedido;
   dispatch: (acao: AcaoPedido) => void;
   totais: Totais;
+  entrega: Entrega;
   erros: ErrosPedido;
   valido: boolean;
 }
@@ -30,9 +32,17 @@ export function PedidoProvider({
   const [estado, dispatch] = useReducer(pedidoReducer, estadoInicial);
 
   const valor = useMemo(() => {
-    const totais = calcularTotais(estado.quantidades, estado.dados.forma, LOJA);
-    const erros = validarPedido(estado, totais.itens);
-    return { estado, dispatch, totais, erros, valido: Object.keys(erros).length === 0 };
+    const entrega = resolverEntrega(estado.dados, LOJA.entrega);
+    const totais = calcularTotais(estado.quantidades, taxaDaEntrega(entrega), LOJA);
+    const erros = validarPedido(estado, totais.itens, entrega);
+    return {
+      estado,
+      dispatch,
+      totais,
+      entrega,
+      erros,
+      valido: Object.keys(erros).length === 0,
+    };
   }, [estado]);
 
   return <PedidoContext.Provider value={valor}>{children}</PedidoContext.Provider>;

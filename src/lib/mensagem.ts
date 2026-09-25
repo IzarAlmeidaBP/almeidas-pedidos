@@ -1,40 +1,44 @@
+import type { ConfigLoja } from "../types/loja";
 import type { Pedido } from "../types/pedido";
 import { formatarDataHorario } from "./dataHora";
+import { resolverEntrega, taxaDaEntrega } from "./entrega";
 import { formatarReais } from "./moeda";
 import { calcularTotais, type ConfigPreco } from "./total";
+
+export type ConfigMensagem = ConfigPreco & Pick<ConfigLoja, "entrega">;
 
 /**
  * Monta a mensagem do WhatsApp.
  * ATENÇÃO: o formato é contrato com a loja. Só mudar com pedido explícito
  * da dona do projeto e atualizando tests/unit/mensagem.test.ts.
  */
-export function montarMensagem(pedido: Pedido, config: ConfigPreco): string {
+export function montarMensagem(pedido: Pedido, config: ConfigMensagem): string {
   const { quantidades, dados } = pedido;
-  const entrega = dados.forma === "entrega";
-  const totais = calcularTotais(quantidades, dados.forma, config);
+  const entrega = resolverEntrega(dados, config.entrega);
+  const totais = calcularTotais(quantidades, taxaDaEntrega(entrega), config);
+  const bairro = entrega.tipo === "sem-bairro" ? "" : entrega.bairro;
 
   const itens = config.sabores
     .filter((sabor) => (quantidades[sabor.id] ?? 0) > 0)
     .map((sabor) => `${quantidades[sabor.id]}x ${sabor.nome}`);
 
-  const valores = [`Subtotal: ${formatarReais(totais.subtotal)}`];
-  if (entrega) valores.push(`Entrega: ${formatarReais(totais.taxaEntrega)}`);
-  valores.push(`*Total: ${formatarReais(totais.total)}*`);
-
-  const cliente = [`Nome: ${dados.nome.trim()}`];
-  if (entrega) {
-    cliente.push(`Endereço: ${dados.endereco.trim()}`);
-    cliente.push(`Referência: ${dados.referencia.trim()}`);
-  }
-  cliente.push(`Data/horário: ${formatarDataHorario(dados.data, dados.horario)}`);
+  const cliente = [
+    `Nome: ${dados.nome.trim()}`,
+    `Bairro: ${bairro}`,
+    `Endereço: ${dados.endereco.trim()}`,
+    `Referência: ${dados.referencia.trim()}`,
+    `Data/horário: ${formatarDataHorario(dados.data, dados.horario)}`,
+  ];
   const obs = dados.observacoes.trim();
   if (obs) cliente.push(`Obs: ${obs}`);
 
   return [
-    `🍓 NOVO PEDIDO – ${entrega ? "ENTREGA" : "RETIRADA"}`,
+    "🍓 NOVO PEDIDO – ENTREGA",
     "",
     ...itens,
-    ...valores,
+    `Subtotal: ${formatarReais(totais.subtotal)}`,
+    `Entrega: ${formatarReais(totais.taxaEntrega)}`,
+    `*Total: ${formatarReais(totais.total)}*`,
     "",
     ...cliente,
     "",

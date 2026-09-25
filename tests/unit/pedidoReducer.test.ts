@@ -31,25 +31,27 @@ describe("pedidoReducer", () => {
     expect(estado.quantidades.preto).toBe(QUANTIDADE_MAXIMA);
   });
 
-  it("atualiza dados do cliente e ignora forma inválida", () => {
+  it("atualiza dados do cliente sem mexer nos outros campos", () => {
     let estado = pedidoReducer(ESTADO_INICIAL, {
       type: "atualizarDado",
       campo: "nome",
       valor: "Ana",
     });
+    estado = pedidoReducer(estado, {
+      type: "atualizarDado",
+      campo: "endereco",
+      valor: "Rua X, 123",
+    });
     expect(estado.dados.nome).toBe("Ana");
+    expect(estado.dados.endereco).toBe("Rua X, 123");
+    expect(estado.dados.referencia).toBe("");
     estado = pedidoReducer(estado, {
       type: "atualizarDado",
-      campo: "forma",
-      valor: "drone",
+      campo: "bairro",
+      valor: "Catolé",
     });
-    expect(estado.dados.forma).toBe("");
-    estado = pedidoReducer(estado, {
-      type: "atualizarDado",
-      campo: "forma",
-      valor: "entrega",
-    });
-    expect(estado.dados.forma).toBe("entrega");
+    expect(estado.dados.bairro).toBe("Catolé");
+    expect(estado.dados.nome).toBe("Ana");
   });
 
   it("alterna entre montagem e pagamento mantendo o pedido", () => {

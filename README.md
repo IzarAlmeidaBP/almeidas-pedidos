@@ -19,7 +19,7 @@ Tudo fica em **`src/config/loja.ts`**:
 | O que mudar          | Campo                                                      |
 | -------------------- | ---------------------------------------------------------- |
 | Preço de cada bombom | `precoUnidade: 14.0` (use ponto: `15.5` = R$ 15,50)        |
-| Taxa de entrega      | `taxaEntrega: 8.0`                                         |
+| Taxa de entrega      | `entrega.faixas` (bairros e taxa) e `entrega.consultar`    |
 | WhatsApp da loja     | `whatsapp: "558382025788"` (só números: 55 + DDD + número) |
 | Chave Pix / titular  | `pix.chave`, `pix.tipo`, `pix.titular`                     |
 | Sabores              | lista `sabores` (id, nome, descrição, foto)                |

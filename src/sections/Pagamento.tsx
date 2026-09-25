@@ -8,7 +8,7 @@ import { formatarReais } from "../lib/moeda";
 import { usePedido } from "../state/PedidoContext";
 
 export function Pagamento() {
-  const { estado, dispatch, totais } = usePedido();
+  const { estado, dispatch, totais, entrega } = usePedido();
   const { dados, quantidades } = estado;
   const titulo = useRef<HTMLHeadingElement>(null);
 
@@ -18,7 +18,6 @@ export function Pagamento() {
   }, []);
 
   const link = montarLinkWhatsApp(LOJA.whatsapp, montarMensagem(estado, LOJA));
-  const entrega = dados.forma === "entrega";
 
   return (
     <section aria-labelledby="titulo-pagamento" className="animate-surgir px-4 py-10">
@@ -59,11 +58,15 @@ export function Pagamento() {
               <dt>Subtotal</dt>
               <dd className="tabular-nums">{formatarReais(totais.subtotal)}</dd>
             </div>
+            {entrega.tipo === "com-taxa" && (
+              <div className="flex justify-between gap-3">
+                <dt>Bairro</dt>
+                <dd className="text-right">{entrega.bairro}</dd>
+              </div>
+            )}
             <div className="flex justify-between">
-              <dt>{entrega ? "Entrega" : "Retirada"}</dt>
-              <dd className="tabular-nums">
-                {entrega ? formatarReais(totais.taxaEntrega) : "Sem taxa"}
-              </dd>
+              <dt>Entrega</dt>
+              <dd className="tabular-nums">{formatarReais(totais.taxaEntrega)}</dd>
             </div>
           </dl>
           <div className="mt-4 rounded-2xl bg-verde px-4 py-4 text-center text-creme">
@@ -73,8 +76,8 @@ export function Pagamento() {
             </p>
           </div>
           <p className="mt-4 text-sm text-tinta/75">
-            {dados.nome.trim()} · {formatarDataHorario(dados.data, dados.horario)}
-            {entrega && <> · {dados.endereco.trim()}</>}
+            {dados.nome.trim()} · {formatarDataHorario(dados.data, dados.horario)}·{" "}
+            {dados.endereco.trim()}
           </p>
         </div>
 

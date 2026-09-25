@@ -1,34 +1,18 @@
 import { useState, type FormEvent } from "react";
-import { Store, Truck } from "lucide-react";
-import { Campo, MensagemErro } from "../components/Campo";
+import { Truck } from "lucide-react";
+import { Campo } from "../components/Campo";
+import { SeletorBairro } from "../components/SeletorBairro";
 import { TituloSecao } from "../components/TituloSecao";
-import { LOJA } from "../config/loja";
 import { hojeISO } from "../lib/dataHora";
-import { formatarReais } from "../lib/moeda";
 import type { CampoValidado } from "../lib/validacao";
 import { usePedido } from "../state/PedidoContext";
-import type { CampoDados, FormaRecebimento } from "../types/pedido";
-
-const OPCOES: {
-  valor: FormaRecebimento;
-  titulo: string;
-  detalhe: string;
-  Icone: typeof Truck;
-}[] = [
-  {
-    valor: "entrega",
-    titulo: "Entrega",
-    detalhe: `Taxa de ${formatarReais(LOJA.taxaEntrega)}`,
-    Icone: Truck,
-  },
-  { valor: "retirada", titulo: "Retirada", detalhe: "Sem taxa", Icone: Store },
-];
+import type { CampoDados } from "../types/pedido";
 
 /** Ordem em que as pendências aparecem embaixo do botão. */
 const ORDEM: CampoValidado[] = [
   "itens",
   "nome",
-  "forma",
+  "bairro",
   "endereco",
   "referencia",
   "data",
@@ -36,7 +20,7 @@ const ORDEM: CampoValidado[] = [
 ];
 
 export function Dados() {
-  const { estado, dispatch, erros, valido } = usePedido();
+  const { estado, dispatch, entrega, erros, valido } = usePedido();
   const { dados } = estado;
   const [tocados, setTocados] = useState<Set<CampoDados>>(new Set());
 
@@ -86,104 +70,67 @@ export function Dados() {
           )}
         </Campo>
 
-        <fieldset aria-describedby={erroVisivel("forma") ? "forma-erro" : undefined}>
-          <legend className="mb-1.5 font-bold text-verde">
-            Entrega ou retirada?
-            <span className="text-vinho" aria-hidden>
-              {" "}
-              *
-            </span>
-          </legend>
-          <div className="grid grid-cols-2 gap-3">
-            {OPCOES.map(({ valor, titulo, detalhe, Icone }) => {
-              const marcado = dados.forma === valor;
-              return (
-                <label
-                  key={valor}
-                  className={`flex min-h-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border-2 p-3 text-center transition has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-vinho ${
-                    marcado
-                      ? "border-verde bg-verde text-creme"
-                      : "border-creme-escuro bg-white text-verde hover:border-verde/50"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="forma"
-                    value={valor}
-                    checked={marcado}
-                    onChange={() => {
-                      atualizar("forma", valor);
-                      tocar("forma");
-                    }}
-                    className="sr-only"
-                  />
-                  <Icone aria-hidden className="size-6" />
-                  <span className="font-extrabold">{titulo}</span>
-                  <span
-                    className={`text-sm ${marcado ? "text-creme/85" : "text-tinta/70"}`}
-                  >
-                    {detalhe}
-                  </span>
-                </label>
-              );
-            })}
-          </div>
-          {erroVisivel("forma") && (
-            <MensagemErro id="forma-erro">{erroVisivel("forma")}</MensagemErro>
-          )}
-          {dados.forma === "retirada" && (
-            <p className="mt-3 rounded-2xl bg-rosa-claro px-4 py-3 text-sm text-tinta">
-              O endereço de retirada é enviado pelo WhatsApp depois que a loja confirmar o
-              pagamento.
-            </p>
-          )}
-        </fieldset>
+        <p className="flex items-center gap-3 rounded-2xl bg-rosa-claro px-4 py-3 text-tinta">
+          <Truck aria-hidden className="size-6 shrink-0 text-verde" />
+          <span>
+            <strong className="text-verde">Entrega</strong> com taxa conforme o bairro.
+          </span>
+        </p>
 
-        {dados.forma === "entrega" && (
-          <div className="animate-surgir space-y-6">
-            <Campo
-              id="endereco"
-              rotulo="Endereço completo"
-              obrigatorio
-              erro={erroVisivel("endereco")}
-              dica="Rua, número, bairro e complemento."
-            >
-              {(props) => (
-                <textarea
-                  {...props}
-                  rows={2}
-                  inputMode="text"
-                  autoComplete="street-address"
-                  autoCapitalize="sentences"
-                  value={dados.endereco}
-                  onChange={(e) => atualizar("endereco", e.target.value)}
-                  onBlur={() => tocar("endereco")}
-                />
-              )}
-            </Campo>
-            <Campo
-              id="referencia"
-              rotulo="Ponto de referência"
-              obrigatorio
-              erro={erroVisivel("referencia")}
-            >
-              {(props) => (
-                <input
-                  {...props}
-                  type="text"
-                  inputMode="text"
-                  autoComplete="off"
-                  autoCapitalize="sentences"
-                  enterKeyHint="next"
-                  value={dados.referencia}
-                  onChange={(e) => atualizar("referencia", e.target.value)}
-                  onBlur={() => tocar("referencia")}
-                  placeholder="Ex.: perto da padaria"
-                />
-              )}
-            </Campo>
-          </div>
-        )}
+        <SeletorBairro
+          bairro={dados.bairro}
+          bairroOutro={dados.bairroOutro}
+          entrega={entrega}
+          erro={erroVisivel("bairro")}
+          aoEscolher={(bairro) => {
+            atualizar("bairro", bairro);
+            tocar("bairro");
+          }}
+          aoDigitarOutro={(nome) => atualizar("bairroOutro", nome)}
+          aoSair={() => tocar("bairro")}
+        />
+
+        <Campo
+          id="endereco"
+          rotulo="Endereço completo"
+          obrigatorio
+          erro={erroVisivel("endereco")}
+          dica="Rua, número e complemento."
+        >
+          {(props) => (
+            <textarea
+              {...props}
+              rows={2}
+              inputMode="text"
+              autoComplete="street-address"
+              autoCapitalize="sentences"
+              value={dados.endereco}
+              onChange={(e) => atualizar("endereco", e.target.value)}
+              onBlur={() => tocar("endereco")}
+            />
+          )}
+        </Campo>
+        <Campo
+          id="referencia"
+          rotulo="Ponto de referência"
+          obrigatorio
+          erro={erroVisivel("referencia")}
+        >
+          {(props) => (
+            <input
+              {...props}
+              type="text"
+              inputMode="text"
+              autoComplete="off"
+              autoCapitalize="sentences"
+              enterKeyHint="next"
+              value={dados.referencia}
+              onChange={(e) => atualizar("referencia", e.target.value)}
+              onBlur={() => tocar("referencia")}
+              placeholder="Ex.: perto da padaria"
+            />
+          )}
+        </Campo>
 
         <div>
           <div className="grid gap-3 min-[360px]:grid-cols-2">
