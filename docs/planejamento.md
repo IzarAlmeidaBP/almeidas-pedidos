@@ -3,8 +3,9 @@
 ## Visão
 
 **O site faz:** mostra o bombom de morango cravejado gigante (fotos e vídeo), deixa o
-cliente montar o pedido por sabor, escolher entrega ou retirada, ver o total e a chave
-Pix, e abrir o WhatsApp da loja com o resumo pronto. O cliente anexa o comprovante lá.
+cliente montar o pedido por sabor, informar os dados de entrega (taxa por bairro), ver o
+total e a chave Pix, e abrir o WhatsApp da loja com o resumo pronto. O cliente anexa o
+comprovante lá.
 
 **O site não faz:** não recebe pagamento, não confere comprovante, não guarda pedidos,
 não tem login nem painel. Tudo o que o cliente digita fica só na página e na mensagem do
@@ -18,7 +19,11 @@ WhatsApp.
 - [x] Logo oficial no hero, favicon e cores exatas do logo
 - [x] Galeria com 4 fotos reais
 - [x] Monte seu pedido (card por sabor com − / +, barra fixa com itens e total)
-- [x] Seus dados (nome, entrega/retirada, endereço e referência se entrega, data/horário, observações)
+- [x] Seus dados (nome, endereço e referência obrigatórios, data/horário, observações);
+      só entrega, com taxa sempre somada
+- [x] Taxa de entrega por bairro: lista com busca (sem acento/maiúscula), taxa ao lado do
+      bairro, "Meu bairro não está na lista" e "Cidades" bloqueiam o pagamento e abrem a
+      consulta no WhatsApp; "Bairro" e "Entrega" no resumo e na mensagem
 - [x] Validação com erro ao lado do campo e botão desabilitado até ficar válido
 - [x] Tela de pagamento (resumo, total, chave Pix aleatória, copiar a chave exata, WhatsApp, voltar)
 - [x] Mensagem do WhatsApp no formato combinado
@@ -45,10 +50,13 @@ WhatsApp.
       "reduzir movimento"; pausa fora da tela
 - [x] Retrato e paisagem (celular deitado)
 
-### O que foi testado (Playwright, `npm run test:e2e`, 38 testes passando)
+### O que foi testado (Playwright, `npm run test:e2e`, 46 testes passando)
 
 - **Fluxo completo** (sabores → dados → pagamento → link do WhatsApp com a mensagem
-  inteira conferida) e **fluxo de retirada**, em: 360px (Chromium, toque), 390px
+  inteira conferida) e **só entrega** (sem opção de retirada, finalizar bloqueado sem
+  endereço e referência, taxa na mensagem), **bairro de R$ 10,00** (busca sem acento,
+  total e mensagem) e **bairro fora da lista** (pagamento bloqueado, link de consulta),
+  em: 360px (Chromium, toque), 390px
   (WebKit com perfil de iPhone 13), 768px (Chromium, toque) e 1440px (Chromium).
 - **Layout em cada uma dessas larguras:** sem rolagem horizontal e nenhum elemento
   passando da borda; − / + com 44×44px ou mais; fonte dos campos ≥ 16px; atributos
@@ -101,9 +109,8 @@ _Backlog a definir com a dona do projeto._
 - [ ] **Nome do sabor escuro:** o story (IMG_6930) diz "cravejado com chocolate **ao
       leite**", mas a config usa "Morango preto / chocolate preto", como no pedido
       inicial. Confirmar o nome certo antes de publicar (trocar em `src/config/loja.ts`).
-- [ ] **Regras interpretadas**, a confirmar (detalhes em `docs/decisoes.md`): na
-      retirada a mensagem não traz a linha "Entrega"; "Obs" some quando vazio; data e
-      horário são obrigatórios.
+- [ ] **Regras interpretadas**, a confirmar (detalhes em `docs/decisoes.md`): "Obs"
+      some quando vazio; data e horário são obrigatórios.
 - [ ] **Open Graph:** o WhatsApp exige URL absoluta na `og:image`. Atualizar o
       `index.html` quando houver endereço publicado.
 - [ ] **Foto `morango-cortado-cesto.jpg`** (a confirmar, segundo o LEIA-ME): confirmar
@@ -115,6 +122,17 @@ _Backlog a definir com a dona do projeto._
       4G, pedir uma versão mais curta.
 - [ ] **Teste em celular real:** iPhone (Safari) em retrato e paisagem, e um Android
       (Chrome).
+- [ ] **WebKit do Playwright no Windows instável:** em 1 de 3 execuções completas da
+      suíte (2026-09-24), o navegador WebKit caiu no meio (processo saiu com código
+      `0xC0000409`) e derrubou os testes do projeto `celular-390-webkit` que estavam
+      rodando. Não é falha de asserção; nas outras execuções os 38 testes passaram.
+      Investigar à parte (ex.: rodar o WebKit com 1 worker ou `retries: 1` também
+      local).
+
+- [ ] **Bairros que podem faltar na lista de entrega:** confirmar com a dona da loja
+      bairros como Velame, Glória, Cinza, Louzeiro e Nações (e a taxa de cada um). Até
+      lá, quem mora neles escolhe "Meu bairro não está na lista" e consulta no WhatsApp.
+      Incluir em `src/config/loja.ts` (`entrega.faixas`).
 
 ## Diário de alterações
 
@@ -143,3 +161,19 @@ _Backlog a definir com a dona do projeto._
   CPF apagado de todos os arquivos (código, testes, docs, `AGENTS.md`, build, relatórios
   do Playwright e objetos do Git ainda não commitados). Lint, typecheck, Vitest (45),
   build e Playwright (38, 2 pulados de propósito) passando; conferido em 320px.
+- **2026-09-24** — Só entrega (pedido da dona da loja): opção de retirada removida do
+  código, da tela, dos testes e dos docs; taxa fixa de R$ 8,00 sempre somada; endereço
+  e referência sempre obrigatórios; aviso "Entrega com taxa fixa de R$ 8,00" no
+  formulário. Lint, typecheck, Vitest (43), build e Playwright (38, 2 pulados de
+  propósito) passando na última execução; numa execução anterior o WebKit caiu
+  (registrado em pendências).
+- **2026-09-25** — Taxa de entrega por bairro (substitui a taxa fixa de R$ 8,00): listas
+  de R$ 8,00 e R$ 10,00 e "Cidades" (consultar) em `src/config/loja.ts`; seletor com
+  busca e taxa ao lado; bairro fora da lista/Cidades bloqueia o pagamento e mostra
+  "Consultar entrega no WhatsApp"; "Bairro" e "Entrega" no resumo, no pagamento e na
+  mensagem (contrato atualizado a pedido). Testes novos: unitários de `entrega.ts`,
+  integração (R$ 8, R$ 10, fora da lista, Cidades, busca com e sem acento) e Playwright
+  (R$ 10 e fora da lista). No Playwright, a escolha do bairro desliga a rolagem suave e
+  centraliza a opção antes do toque (a barra fixa cobria a opção). Lint, typecheck,
+  Vitest (62), build e Playwright (46, 2 pulados de propósito; suíte repetida 3× sem
+  falha) passando. Pendente: confirmar bairros que podem faltar.

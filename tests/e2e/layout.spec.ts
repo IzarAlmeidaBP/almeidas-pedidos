@@ -22,7 +22,6 @@ test("botões − / + têm pelo menos 44×44px", async ({ page }) => {
 });
 
 test("campos com fonte de 16px ou mais e teclado certo", async ({ page }) => {
-  await page.locator("label", { hasText: /^Entrega/ }).click();
   const tamanhos = await page
     .locator("#dados input:not([type=radio]), #dados textarea")
     .evaluateAll((els) =>

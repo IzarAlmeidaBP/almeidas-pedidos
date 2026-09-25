@@ -86,12 +86,41 @@ Formato: **data** — decisão. _Motivo._
   está, com os hífens; a função que tirava pontos e traços (feita para o CPF) foi
   removida. O CPF foi apagado de todos os arquivos do projeto antes do primeiro commit.
   _Motivo: não expor o CPF da titular._
+- **2026-09-24** — **Só entrega.** A opção de retirada foi removida: não existe mais a
+  escolha de forma de recebimento (campo `forma` saiu do modelo, da validação e da
+  tela). A taxa de entrega (hoje por bairro, ver 2026-09-25) é sempre somada
+  ao total quando há pelo menos 1 morango; endereço e ponto de referência são sempre
+  obrigatórios. A mensagem do WhatsApp mantém o formato combinado de entrega
+  (`🍓 NOVO PEDIDO – ENTREGA`, linha `Entrega:`, `Endereço:` e `Referência:` em todo
+  pedido). _Pedido da dona da loja._
+- **2026-09-25** — **Taxa de entrega por bairro** (substitui a taxa fixa de R$ 8,00).
+  Listas em `src/config/loja.ts` (`entrega.faixas`: R$ 8,00 até ~5 km com 38 bairros,
+  R$ 10,00 acima de ~5 km com 21 bairros; `entrega.consultar`: "Cidades"). O cliente
+  escolhe numa lista com busca (ordem alfabética, busca sem diferenciar acento e
+  maiúscula), com a taxa ao lado de cada bairro; a taxa entra no total. Lógica pura em
+  `src/lib/entrega.ts` (`listarBairros`, `filtrarBairros`, `resolverEntrega`,
+  `montarMensagemConsulta`). _Pedido da dona do projeto._
+- **2026-09-25** — "Meu bairro não está na lista" (sempre a última opção) e "Cidades" não
+  calculam taxa: o botão de finalizar fica bloqueado e aparece "Consultar entrega no
+  WhatsApp", que abre o WhatsApp da loja com "Olá! Moro no bairro X e gostaria de saber
+  a taxa de entrega.". No caso "fora da lista" o cliente digita o nome do bairro (o que
+  ele buscou já vem preenchido); sem nome, o botão não aparece. _Pedido da dona do
+  projeto; o nome é necessário para completar a mensagem._
+- **2026-09-25** — **Mudança no contrato da mensagem do WhatsApp** (pedido explícito):
+  nova linha `Bairro: X` logo antes de `Endereço:`; `Entrega: R$ Y` passa a ser a taxa
+  do bairro. O resumo lateral e a tela de pagamento mostram "Bairro" e "Entrega". A dica
+  do endereço deixou de pedir o bairro ("Rua, número e complemento."). _O bairro fica
+  junto dos dados de endereço; a taxa continua na linha de valores._
+- **2026-09-25** — Seletor de bairro feito com `radio` nativo dentro de uma lista com
+  rolagem própria, sem biblioteca. _Acessível (teclado e leitor de tela) e sem nova
+  dependência. Antes de escolher o bairro, o resumo mostra "Escolha o bairro" e o total
+  não inclui taxa; em bairro de consulta, mostra "A consultar"._
+- **2026-09-24** — Com o carrinho vazio, a taxa aparece como R$ 0,00 no resumo lateral.
+  _O total de um pedido vazio fica R$ 0,00, e o botão de finalizar só libera com pelo
+  menos 1 morango._
 
 ## Regras de negócio interpretadas (confirmar com a dona do projeto)
 
-- **2026-09-24** — Na **retirada**, a mensagem do WhatsApp omite a linha
-  `Entrega: R$ ...` (além de endereço e referência). _O modelo só mostra o caso de
-  entrega; mostrar "Entrega: R$ 0,00" num pedido de retirada confundiria._
 - **2026-09-24** — A linha `Obs:` é omitida quando o campo está vazio. _Observações são
   opcionais._
 - **2026-09-24** — Data e horário são **obrigatórios**, e a data não pode ser anterior a

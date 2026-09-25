@@ -1,12 +1,12 @@
-export type FormaRecebimento = "entrega" | "retirada";
-
 /** Quantidade por id de sabor. Sabores ausentes contam como 0. */
 export type Quantidades = Record<string, number>;
 
 export interface DadosCliente {
   nome: string;
-  /** Vazio enquanto o cliente não escolheu. */
-  forma: FormaRecebimento | "";
+  /** Nome do bairro da lista, BAIRRO_FORA_DA_LISTA ou "" (não escolhido). */
+  bairro: string;
+  /** Bairro digitado quando o cliente escolhe "Meu bairro não está na lista". */
+  bairroOutro: string;
   endereco: string;
   referencia: string;
   /** Formato do input date: AAAA-MM-DD */

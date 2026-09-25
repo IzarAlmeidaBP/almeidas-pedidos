@@ -107,9 +107,8 @@
   apenas dados já públicos.
 - Chave Pix (aleatória), nome da titular e WhatsApp da loja foram autorizados por
   mim para uso público no site. Qualquer outro dado pessoal ou de contato
-  (ex: endereço de retirada) só pode ser publicado se eu confirmar
-  explicitamente. O endereço de retirada NÃO vai no site: é enviado pela
-  loja no WhatsApp após confirmar o pagamento.
+  (ex: endereço da loja ou da titular) só pode ser publicado se eu confirmar
+  explicitamente.
 
 ## Git e comunicação
 

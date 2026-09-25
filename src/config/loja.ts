@@ -2,7 +2,7 @@ import type { ConfigLoja } from "../types/loja";
 
 /**
  * ÚNICO lugar com os dados da loja.
- * Para trocar preço, taxa, sabores, Pix ou WhatsApp, edite só este arquivo.
+ * Para trocar preço, taxas/bairros, sabores, Pix ou WhatsApp, edite só este arquivo.
  */
 export const LOJA = {
   nome: "Almeida's – Confectionery Art",
@@ -14,7 +14,83 @@ export const LOJA = {
     titular: "Sofia Almeida dos Santos",
   },
   precoUnidade: 14.0,
-  taxaEntrega: 8.0,
+  /** Taxa de entrega por bairro. A lista na tela sai em ordem alfabética. */
+  entrega: {
+    faixas: [
+      {
+        taxa: 8.0,
+        descricao: "até ~5 km",
+        bairros: [
+          "Acácio Figueiredo",
+          "Alto Branco",
+          "Bela Vista",
+          "Castelo Branco",
+          "Catolé",
+          "Centenário",
+          "Centro",
+          "Conceição",
+          "Cruzeiro",
+          "Distrito dos Mecânicos",
+          "Distrito Industrial",
+          "Estação Velha",
+          "Itararé",
+          "Jardim Borborema",
+          "Jardim Paulistano",
+          "Jardim Tavares",
+          "Jardim Vitória",
+          "Jeremias",
+          "José Pinheiro",
+          "Lauritzen",
+          "Liberdade",
+          "Mirante",
+          "Monte Castelo",
+          "Monte Santo",
+          "Nova Brasília",
+          "Novo Cruzeiro",
+          "Palmeira",
+          "Prata",
+          "Presidente Médici",
+          "Quarenta",
+          "Rosa Cruz",
+          "Sandra Cavalcante",
+          "Santa Cruz",
+          "Santa Terezinha",
+          "Santo Antônio",
+          "São José",
+          "Tambor",
+          "Vila Cabral",
+        ],
+      },
+      {
+        taxa: 10.0,
+        descricao: "acima de ~5 km",
+        bairros: [
+          "Bodocongó",
+          "Catolé de Zé Ferreira",
+          "Dinamérica",
+          "Jardim Verdejante",
+          "Ligeiro",
+          "Malvinas",
+          "Mutirão do Serrotão",
+          "Novo Bodocongó",
+          "Novo Horizonte",
+          "Pedregal",
+          "Portal Sudoeste",
+          "Ramadinha",
+          "Ressurreição",
+          "Rocha Cavalcante",
+          "Ronaldo Cunha Lima",
+          "Santa Rosa",
+          "São José da Mata",
+          "Serrotão",
+          "Três Irmãs",
+          "Universitário",
+          "Vale Verde",
+        ],
+      },
+    ],
+    consultar: ["Cidades"],
+  },
   sabores: [
     {
       id: "branco",

@@ -54,15 +54,29 @@ export async function esperarSemVazamento(page: Page) {
   );
 }
 
-/** Preenche o pedido de exemplo (2 brancos, 1 preto, entrega). */
+/** Busca o bairro e marca a opção (nome acessível = bairro + taxa). */
+export async function escolherBairro(page: Page, busca: string, opcao: string) {
+  // A página usa rolagem suave; no teste, uma rolagem ainda em andamento faz o
+  // toque cair em outro lugar. Desliga só aqui.
+  await page.evaluate(() => (document.documentElement.style.scrollBehavior = "auto"));
+  await page.getByRole("searchbox", { name: "Buscar bairro" }).fill(busca);
+  const radio = page.getByRole("radio", { name: opcao, exact: true });
+  const rotulo = page.locator("label", { has: radio });
+  // No celular a barra fixa do total cobre o fim da tela: centraliza antes do toque.
+  await rotulo.evaluate((el) => el.scrollIntoView({ block: "center" }));
+  await rotulo.click();
+  await expect(radio).toBeChecked();
+}
+
+/** Preenche o pedido de exemplo (2 brancos, 1 preto, bairro Catolé). */
 export async function montarPedidoCompleto(page: Page) {
   await page.getByRole("button", { name: "Adicionar 1 Morango branco" }).click();
   await page.getByRole("button", { name: "Adicionar 1 Morango branco" }).click();
   await page.getByRole("button", { name: "Adicionar 1 Morango preto" }).click();
 
   await page.getByLabel(/^Nome/).fill("Maria");
-  await page.locator("label", { hasText: /^Entrega/ }).click();
-  await page.getByLabel(/^Endereço completo/).fill("Rua X, 123 – Bairro");
+  await escolherBairro(page, "catole", "Catolé R$ 8,00");
+  await page.getByLabel(/^Endereço completo/).fill("Rua X, 123");
   await page.getByLabel(/^Ponto de referência/).fill("perto da padaria");
   await page.getByLabel(/^Data/).fill(dataFutura().iso);
   await page.getByLabel(/^Horário/).fill("15:00");

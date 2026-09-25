@@ -16,7 +16,8 @@ export type AcaoPedido =
 
 export const DADOS_VAZIOS: DadosCliente = {
   nome: "",
-  forma: "",
+  bairro: "",
+  bairroOutro: "",
   endereco: "",
   referencia: "",
   data: "",
@@ -38,16 +39,8 @@ export function pedidoReducer(estado: EstadoPedido, acao: AcaoPedido): EstadoPed
       if (nova === atual) return estado;
       return { ...estado, quantidades: { ...estado.quantidades, [acao.id]: nova } };
     }
-    case "atualizarDado": {
-      if (
-        acao.campo === "forma" &&
-        acao.valor !== "entrega" &&
-        acao.valor !== "retirada"
-      ) {
-        return estado;
-      }
+    case "atualizarDado":
       return { ...estado, dados: { ...estado.dados, [acao.campo]: acao.valor } };
-    }
     case "irParaPagamento":
       return { ...estado, etapa: "pagamento" };
     case "voltarParaEdicao":

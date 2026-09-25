@@ -14,35 +14,28 @@ describe("contarItens", () => {
 });
 
 describe("calcularTotais", () => {
-  it("entrega soma a taxa fixa", () => {
-    expect(calcularTotais({ branco: 2, preto: 1 }, "entrega", LOJA)).toEqual({
+  it("soma a taxa de entrega recebida", () => {
+    expect(calcularTotais({ branco: 2, preto: 1 }, 8, LOJA)).toEqual({
       itens: 3,
       subtotal: 42,
       taxaEntrega: 8,
       total: 50,
     });
-  });
-
-  it("retirada não tem taxa", () => {
-    expect(calcularTotais({ branco: 2 }, "retirada", LOJA)).toEqual({
-      itens: 2,
-      subtotal: 28,
-      taxaEntrega: 0,
-      total: 28,
-    });
-  });
-
-  it("sem forma escolhida ainda não soma taxa", () => {
-    expect(calcularTotais({ preto: 1 }, "", LOJA).total).toBe(14);
+    expect(calcularTotais({ preto: 1 }, 10, LOJA).total).toBe(24);
   });
 
   it("sem itens não cobra taxa de entrega", () => {
-    expect(calcularTotais({}, "entrega", LOJA).total).toBe(0);
+    expect(calcularTotais({}, 8, LOJA)).toEqual({
+      itens: 0,
+      subtotal: 0,
+      taxaEntrega: 0,
+      total: 0,
+    });
   });
 
   it("não acumula erro de ponto flutuante", () => {
-    const config = { ...LOJA, precoUnidade: 0.1, taxaEntrega: 0.2 };
-    expect(calcularTotais({ branco: 3 }, "entrega", config)).toMatchObject({
+    const config = { ...LOJA, precoUnidade: 0.1 };
+    expect(calcularTotais({ branco: 3 }, 0.2, config)).toMatchObject({
       subtotal: 0.3,
       total: 0.5,
     });
