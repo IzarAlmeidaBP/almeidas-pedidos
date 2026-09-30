@@ -25,7 +25,7 @@ describe("montarMensagem (contrato com a loja)", () => {
         "🍓 NOVO PEDIDO – ENTREGA",
         "",
         "2x Morango branco",
-        "1x Morango preto",
+        "1x Bombom de morango chocolate ao leite",
         "Subtotal: R$ 42,00",
         "Entrega: R$ 8,00",
         "*Total: R$ 50,00*",
@@ -56,7 +56,7 @@ describe("montarMensagem (contrato com a loja)", () => {
       [
         "🍓 NOVO PEDIDO – ENTREGA",
         "",
-        "3x Morango preto",
+        "3x Bombom de morango chocolate ao leite",
         "Subtotal: R$ 42,00",
         "Entrega: R$ 10,00",
         "*Total: R$ 52,00*",
@@ -81,7 +81,7 @@ describe("montarMensagem (contrato com a loja)", () => {
       LOJA,
     );
     expect(msg).toContain("1x Morango branco");
-    expect(msg).not.toContain("Morango preto");
+    expect(msg).not.toContain("Bombom de morango chocolate ao leite");
     expect(msg).toContain("Nome: Ana\n");
     expect(msg).not.toContain("Obs:");
   });

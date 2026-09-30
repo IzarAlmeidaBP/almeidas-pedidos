@@ -100,8 +100,8 @@ export const LOJA = {
     },
     {
       id: "preto",
-      nome: "Morango preto",
-      descricao: "Cravejado com chocolate preto",
+      nome: "Bombom de morango chocolate ao leite",
+      descricao: "Morango trufado com creme de chocolate branco e coberto com chocolate preto",
       foto: "/img/morango-preto.webp",
     },
   ],
