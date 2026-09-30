@@ -62,7 +62,7 @@ describe("fluxo completo do pedido", () => {
 
     await user.click(screen.getByRole("button", { name: "Adicionar 1 Morango branco" }));
     await user.click(screen.getByRole("button", { name: "Adicionar 1 Morango branco" }));
-    await user.click(screen.getByRole("button", { name: "Adicionar 1 Morango preto" }));
+    await user.click(screen.getByRole("button", { name: "Adicionar 1 Bombom de morango chocolate ao leite" }));
 
     // Sem bairro ainda não há taxa: o total é só dos morangos.
     const barra = screen.getByRole("region", { name: "Resumo do pedido" });
@@ -101,7 +101,7 @@ describe("fluxo completo do pedido", () => {
         "🍓 NOVO PEDIDO – ENTREGA",
         "",
         "2x Morango branco",
-        "1x Morango preto",
+        "1x Bombom de morango chocolate ao leite",
         "Subtotal: R$ 42,00",
         "Entrega: R$ 8,00",
         "*Total: R$ 50,00*",
@@ -144,7 +144,7 @@ describe("fluxo completo do pedido", () => {
   it("bairro de R$ 10,00 soma a taxa certa no resumo e na mensagem", async () => {
     const user = userEvent.setup();
     renderizar();
-    await user.click(screen.getByRole("button", { name: "Adicionar 1 Morango preto" }));
+    await user.click(screen.getByRole("button", { name: "Adicionar 1 Bombom de morango chocolate ao leite" }));
     await preencherDados(user);
     await escolherBairro(user, "Bodocongo", "Bodocongó R$ 10,00");
 
@@ -185,7 +185,7 @@ describe("fluxo completo do pedido", () => {
   it("bairro fora da lista: sem taxa, bloqueia o pagamento e oferece consulta", async () => {
     const user = userEvent.setup();
     renderizar();
-    await user.click(screen.getByRole("button", { name: "Adicionar 1 Morango preto" }));
+    await user.click(screen.getByRole("button", { name: "Adicionar 1 Bombom de morango chocolate ao leite" }));
     await preencherDados(user);
     expect(botaoFinalizar()).toBeEnabled();
 
@@ -223,7 +223,7 @@ describe("fluxo completo do pedido", () => {
   it("Cidades também não calcula taxa e manda consultar", async () => {
     const user = userEvent.setup();
     renderizar();
-    await user.click(screen.getByRole("button", { name: "Adicionar 1 Morango preto" }));
+    await user.click(screen.getByRole("button", { name: "Adicionar 1 Bombom de morango chocolate ao leite" }));
     await preencherDados(user);
     await escolherBairro(user, "cidades", "Cidades Consultar");
 
@@ -236,7 +236,7 @@ describe("fluxo completo do pedido", () => {
   it("sem bairro, endereço e referência não deixa finalizar", async () => {
     const user = userEvent.setup();
     renderizar();
-    await user.click(screen.getByRole("button", { name: "Adicionar 1 Morango preto" }));
+    await user.click(screen.getByRole("button", { name: "Adicionar 1 Bombom de morango chocolate ao leite" }));
     await user.type(screen.getByLabelText(/^Nome/), "Ana");
     fireEvent.change(screen.getByLabelText(/^Data/), {
       target: { value: depoisDeAmanha },
@@ -252,7 +252,7 @@ describe("fluxo completo do pedido", () => {
   it("copia a chave Pix aleatória exatamente como é (com hífens)", async () => {
     const user = userEvent.setup();
     renderizar();
-    await user.click(screen.getByRole("button", { name: "Adicionar 1 Morango preto" }));
+    await user.click(screen.getByRole("button", { name: "Adicionar 1 Bombom de morango chocolate ao leite" }));
     await preencherDados(user);
     await user.click(botaoFinalizar());
 
@@ -296,8 +296,8 @@ describe("fluxo completo do pedido", () => {
       within(resumo).getByRole("link", { name: "Escolher sabores" }),
     ).toHaveAttribute("href", "#pedido");
 
-    await user.click(screen.getByRole("button", { name: "Adicionar 1 Morango preto" }));
-    expect(within(resumo).getByText("1x Morango preto")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Adicionar 1 Bombom de morango chocolate ao leite" }));
+    expect(within(resumo).getByText("1x Bombom de morango chocolate ao leite")).toBeInTheDocument();
     expect(within(resumo).getByText("Escolha o bairro")).toBeInTheDocument();
     expect(
       within(resumo).getByRole("link", { name: "Preencher seus dados" }),

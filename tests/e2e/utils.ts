@@ -72,7 +72,7 @@ export async function escolherBairro(page: Page, busca: string, opcao: string) {
 export async function montarPedidoCompleto(page: Page) {
   await page.getByRole("button", { name: "Adicionar 1 Morango branco" }).click();
   await page.getByRole("button", { name: "Adicionar 1 Morango branco" }).click();
-  await page.getByRole("button", { name: "Adicionar 1 Morango preto" }).click();
+  await page.getByRole("button", { name: "Adicionar 1 Bombom de morango chocolate ao leite" }).click();
 
   await page.getByLabel(/^Nome/).fill("Maria");
   await escolherBairro(page, "catole", "Catolé R$ 8,00");

@@ -106,9 +106,9 @@ _Backlog a definir com a dona do projeto._
 
 - [ ] Testar o link do WhatsApp (558382025788) em um celular real.
 - [ ] Pedir fotos novas do Morango preto (a atual é recorte de story).
-- [ ] **Nome do sabor escuro:** o story (IMG_6930) diz "cravejado com chocolate **ao
-      leite**", mas a config usa "Morango preto / chocolate preto", como no pedido
-      inicial. Confirmar o nome certo antes de publicar (trocar em `src/config/loja.ts`).
+- [x] **Nome do sabor escuro:** confirmado pela loja como "Bombom de morango chocolate
+      ao leite" (descrição: morango trufado com creme de chocolate branco e coberto com
+      chocolate preto). Atualizado em 2026-09-30.
 - [ ] **Regras interpretadas**, a confirmar (detalhes em `docs/decisoes.md`): "Obs"
       some quando vazio; data e horário são obrigatórios.
 - [ ] **Open Graph:** o WhatsApp exige URL absoluta na `og:image`. Atualizar o
@@ -177,3 +177,7 @@ _Backlog a definir com a dona do projeto._
   centraliza a opção antes do toque (a barra fixa cobria a opção). Lint, typecheck,
   Vitest (62), build e Playwright (46, 2 pulados de propósito; suíte repetida 3× sem
   falha) passando. Pendente: confirmar bairros que podem faltar.
+- **2026-09-30** — Sabor escuro renomeado para "Bombom de morango chocolate ao leite",
+  com a descrição "Morango trufado com creme de chocolate branco e coberto com chocolate
+  preto" (`src/config/loja.ts`); testes atualizados. Lint, typecheck, testes (62), build
+  e e2e (46) passando.

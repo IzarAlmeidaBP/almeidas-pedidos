@@ -52,7 +52,7 @@ test("fluxo completo: sabores → dados → pagamento → link do WhatsApp", asy
       "🍓 NOVO PEDIDO – ENTREGA",
       "",
       "2x Morango branco",
-      "1x Morango preto",
+      "1x Bombom de morango chocolate ao leite",
       "Subtotal: R$ 42,00",
       "Entrega: R$ 8,00",
       "*Total: R$ 50,00*",
@@ -79,7 +79,7 @@ test("só entrega: endereço e referência obrigatórios e taxa sempre somada", 
   await expect(page.getByText(/retirada/i)).toHaveCount(0);
   await expect(page.getByRole("radio", { name: /retirada/i })).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Adicionar 1 Morango preto" }).click();
+  await page.getByRole("button", { name: "Adicionar 1 Bombom de morango chocolate ao leite" }).click();
   await page.getByLabel(/^Nome/).fill("Ana");
   await page.getByLabel(/^Data/).fill(dataFutura().iso);
   await page.getByLabel(/^Horário/).fill("09:30");
