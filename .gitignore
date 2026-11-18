@@ -32,3 +32,9 @@ blob-report/
 
 # Capturas de tela de revisão visual (fora do Git)
 screenshots/
+
+# Documentos internos e instruções do agente: ficam só no computador (fora do Git,
+# o repositório é público)
+docs/
+AGENTS.md
+CLAUDE.md

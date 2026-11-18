@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import {
   abrir,
@@ -289,7 +289,11 @@ test("preços, descrições e opções da página batem com a seção 3 do plane
   page,
 }) => {
   test.skip(largura(page) !== 1440, "conferência de conteúdo: basta uma largura");
-  const doc = readFileSync("docs/planejamento-atualizacao-natal.md", "utf-8");
+  // docs/ fica só no computador da dona do projeto (fora do Git): sem ele, a
+  // conferência do catálogo fica com o Vitest (tests/unit/natal.test.ts).
+  const planejamento = "docs/planejamento-atualizacao-natal.md";
+  test.skip(!existsSync(planejamento), "docs/ não está nesta cópia do projeto");
+  const doc = readFileSync(planejamento, "utf-8");
   const secao3 = doc.slice(doc.indexOf("## 3. Catálogo"), doc.indexOf("## 4."));
 
   type Esperado = { nome: string; preco: string; descricao: string; opcoes: string[] };
