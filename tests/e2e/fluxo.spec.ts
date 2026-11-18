@@ -39,7 +39,7 @@ test("fluxo completo: sabores → dados → pagamento → link do WhatsApp", asy
 
   await expect(page.getByRole("heading", { name: "Quase lá!" })).toBeVisible();
   await expect(page.getByText("R$ 50,00", { exact: true })).toBeVisible();
-  await expect(page.getByText("c8f5c461-ed0b-4566-b39c-7215aa9216b6")).toBeVisible();
+  await expect(page.getByText("1fc14c73-dc2a-4454-b933-ce1c0c8f8131")).toBeVisible();
   await esperarSemVazamento(page);
 
   const whatsapp = page.getByRole("link", { name: "Enviar pedido no WhatsApp" });

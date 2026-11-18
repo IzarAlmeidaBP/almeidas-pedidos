@@ -9,7 +9,7 @@ export const LOJA = {
   cidade: "Campina Grande/PB",
   whatsapp: "558382025788", // (83) 8202-5788
   pix: {
-    chave: "c8f5c461-ed0b-4566-b39c-7215aa9216b6",
+    chave: "1fc14c73-dc2a-4454-b933-ce1c0c8f8131",
     tipo: "Aleatória",
     titular: "Sofia Almeida dos Santos",
   },

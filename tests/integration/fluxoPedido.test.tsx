@@ -259,7 +259,7 @@ describe("fluxo completo do pedido", () => {
     await user.click(screen.getByRole("button", { name: "Copiar chave Pix" }));
     expect(await screen.findByRole("button", { name: "Copiado!" })).toBeInTheDocument();
     expect(await navigator.clipboard.readText()).toBe(
-      "c8f5c461-ed0b-4566-b39c-7215aa9216b6",
+      "1fc14c73-dc2a-4454-b933-ce1c0c8f8131",
     );
     expect(screen.getByText("Chave Pix (Aleatória)")).toBeInTheDocument();
   });
