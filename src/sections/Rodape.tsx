@@ -1,6 +1,7 @@
 import { MapPin } from "lucide-react";
 import { IconeInstagram } from "../components/IconeInstagram";
 import { LOJA } from "../config/loja";
+import { TEXTOS_NATAL } from "../config/natal";
 
 function usuarioInstagram(url: string): string {
   const usuario = url.replace(/\/+$/, "").split("/").pop();
@@ -11,7 +12,14 @@ function usuarioInstagram(url: string): string {
  * `espacoBarra` deixa espaço para a barra fixa de total (só existe abaixo de 1280px)
  * não cobrir o rodapé. Sem a barra, respeita a área segura de baixo do iPhone.
  */
-export function Rodape({ espacoBarra = false }: { espacoBarra?: boolean }) {
+export function Rodape({
+  espacoBarra = false,
+  natal = false,
+}: {
+  espacoBarra?: boolean;
+  /** Campanha de Natal no ar: mostra a mensagem final de Natal. */
+  natal?: boolean;
+}) {
   return (
     <footer
       className={`bg-verde px-4 pt-10 text-center text-creme ${
@@ -20,6 +28,11 @@ export function Rodape({ espacoBarra = false }: { espacoBarra?: boolean }) {
           : "pb-[max(2.5rem,env(safe-area-inset-bottom))]"
       }`}
     >
+      {natal && (
+        <p className="mx-auto mb-8 max-w-md border-b border-dourado/50 pb-8 font-titulo text-2xl leading-snug text-dourado-claro">
+          {TEXTOS_NATAL.mensagemFinal}
+        </p>
+      )}
       <p className="font-titulo text-3xl text-rosa">{LOJA.nome.split(" – ")[0]}</p>
       <a
         href={LOJA.instagram}

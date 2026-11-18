@@ -1,13 +1,11 @@
 import { ShoppingBag } from "lucide-react";
-import { LOJA } from "../config/loja";
 import { formatarReais } from "../lib/moeda";
 import { usePedido } from "../state/PedidoContext";
+import { LinhasPedido } from "./LinhasPedido";
 
 /** Resumo lateral do computador (fica visível enquanto o cliente rola a página). */
 export function ResumoPedido() {
-  const { estado, dispatch, totais, entrega, valido } = usePedido();
-  const { quantidades } = estado;
-  const itens = LOJA.sabores.filter((s) => (quantidades[s.id] ?? 0) > 0);
+  const { dispatch, linhas, totais, entrega, valido, regras } = usePedido();
 
   return (
     <section
@@ -19,24 +17,12 @@ export function ResumoPedido() {
         Seu pedido
       </h2>
 
-      {itens.length === 0 ? (
-        <p className="mt-4 text-tinta/70">Nenhum morango escolhido ainda.</p>
+      {linhas.length === 0 ? (
+        <p className="mt-4 text-tinta/70">Nenhum item escolhido ainda.</p>
       ) : (
-        <ul className="mt-4 space-y-1.5">
-          {itens.map((s) => {
-            const qtd = quantidades[s.id] ?? 0;
-            return (
-              <li key={s.id} className="flex justify-between gap-3">
-                <span>
-                  {qtd}x {s.nome}
-                </span>
-                <span className="tabular-nums">
-                  {formatarReais(qtd * LOJA.precoUnidade)}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="mt-4 max-h-[40vh] overflow-y-auto overscroll-contain pr-1">
+          <LinhasPedido linhas={linhas} />
+        </div>
       )}
 
       <dl className="mt-4 space-y-1.5 border-t border-creme-escuro pt-4 text-sm text-tinta/80">
@@ -82,10 +68,12 @@ export function ResumoPedido() {
         </button>
       ) : (
         <a
-          href={totais.itens === 0 ? "#pedido" : "#dados"}
+          href={
+            totais.itens === 0 ? (regras.ativo ? "#guirlandas" : "#pedido") : "#dados"
+          }
           className="mt-5 flex min-h-12 w-full items-center justify-center rounded-full border-2 border-verde px-5 font-extrabold text-verde transition hover:bg-verde/5"
         >
-          {totais.itens === 0 ? "Escolher sabores" : "Preencher seus dados"}
+          {totais.itens === 0 ? "Escolher produtos" : "Preencher seus dados"}
         </a>
       )}
     </section>

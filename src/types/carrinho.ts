@@ -1,4 +1,6 @@
-import type { DadosCliente } from "./pedido";
+import type { DadosCliente, PeriodoEntrega } from "./pedido";
+
+export type { PeriodoEntrega };
 
 export interface OpcaoProduto {
   id: string;
@@ -50,10 +52,5 @@ export interface ItemCarrinho {
 
 export type Carrinho = readonly ItemCarrinho[];
 
-export type PeriodoEntrega = "Manhã" | "Tarde" | "Noite";
-
-/** Dados do checkout novo: o horário vira período (Manhã/Tarde/Noite). */
-export interface DadosEntrega extends Omit<DadosCliente, "horario"> {
-  /** "" = não escolhido. */
-  periodo: PeriodoEntrega | "";
-}
+/** Dados do checkout (o horário é o período: Manhã/Tarde/Noite). */
+export type DadosEntrega = DadosCliente;

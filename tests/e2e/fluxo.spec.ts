@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
 import {
+  abrir,
   COMPUTADOR,
-  dataFutura,
+  DATA_ENTREGA,
   escolherBairro,
+  escolherPeriodo,
   esperarSemVazamento,
   largura,
   montarPedidoCompleto,
@@ -11,7 +13,7 @@ import {
 test("fluxo completo: sabores → dados → pagamento → link do WhatsApp", async ({
   page,
 }) => {
-  await page.goto("/");
+  await abrir(page);
   await esperarSemVazamento(page);
 
   const botaoFinalizar = page
@@ -25,7 +27,7 @@ test("fluxo completo: sabores → dados → pagamento → link do WhatsApp", asy
   if (largura(page) < COMPUTADOR) {
     const barra = page.getByRole("region", { name: "Resumo do pedido" });
     await expect(barra).toBeVisible();
-    await expect(barra).toContainText("3 morangos");
+    await expect(barra).toContainText("Ver carrinho (3)");
     await expect(barra).toContainText("R$ 50,00");
   } else {
     const resumo = page.getByRole("region", { name: "Seu pedido", exact: true });
@@ -61,7 +63,8 @@ test("fluxo completo: sabores → dados → pagamento → link do WhatsApp", asy
       "Bairro: Catolé",
       "Endereço: Rua X, 123",
       "Referência: perto da padaria",
-      `Data/horário: ${dataFutura().ddmm} às 15h`,
+      `Entrega: ${DATA_ENTREGA.br} – Tarde`,
+      "Pedido feito em: 18/11/2026",
       "Obs: é presente",
       "",
       "Segue o comprovante do Pix 👇",
@@ -75,14 +78,16 @@ test("fluxo completo: sabores → dados → pagamento → link do WhatsApp", asy
 test("só entrega: endereço e referência obrigatórios e taxa sempre somada", async ({
   page,
 }) => {
-  await page.goto("/");
-  await expect(page.getByText(/retirada/i)).toHaveCount(0);
+  await abrir(page);
+  // "retirada" só aparece no aviso "Não trabalhamos com retirada" do Natal.
+  await expect(page.getByText(/retirada/i)).toHaveCount(1);
+  await expect(page.getByText(/retirada/i)).toContainText("Não trabalhamos com retirada.");
   await expect(page.getByRole("radio", { name: /retirada/i })).toHaveCount(0);
 
   await page.getByRole("button", { name: "Adicionar 1 Bombom de morango chocolate ao leite" }).click();
   await page.getByLabel(/^Nome/).fill("Ana");
-  await page.getByLabel(/^Data/).fill(dataFutura().iso);
-  await page.getByLabel(/^Horário/).fill("09:30");
+  await page.getByLabel(/^Data da entrega/).fill(DATA_ENTREGA.iso);
+  await escolherPeriodo(page, "Manhã");
 
   const finalizar = page
     .getByRole("region", { name: "Seus dados" })
@@ -111,7 +116,7 @@ test("só entrega: endereço e referência obrigatórios e taxa sempre somada", 
 test("bairro de R$ 10,00: taxa ao lado do bairro, no total e na mensagem", async ({
   page,
 }) => {
-  await page.goto("/");
+  await abrir(page);
   await montarPedidoCompleto(page);
   // Busca sem acento e em maiúsculas.
   await escolherBairro(page, "BODOCONGO", "Bodocongó R$ 10,00");
@@ -136,7 +141,7 @@ test("bairro de R$ 10,00: taxa ao lado do bairro, no total e na mensagem", async
 test("bairro fora da lista: bloqueia o pagamento e consulta no WhatsApp", async ({
   page,
 }) => {
-  await page.goto("/");
+  await abrir(page);
   await montarPedidoCompleto(page);
   const finalizar = page
     .getByRole("region", { name: "Seus dados" })

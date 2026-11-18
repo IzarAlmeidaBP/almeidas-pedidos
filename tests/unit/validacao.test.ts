@@ -1,81 +1,101 @@
 import { describe, expect, it } from "vitest";
-import { DADOS_VAZIOS } from "../../src/lib/pedidoReducer";
+import { NATAL } from "../../src/config/natal";
 import type { Entrega } from "../../src/lib/entrega";
-import { validarPedido } from "../../src/lib/validacao";
-import type { DadosCliente, Pedido } from "../../src/types/pedido";
+import { DADOS_VAZIOS } from "../../src/lib/pedidoReducer";
+import { validarPedido, type ContextoValidacao } from "../../src/lib/validacao";
+import type { DadosCliente } from "../../src/types/pedido";
 
-const HOJE = "2026-09-24";
 const CATOLE: Entrega = { tipo: "com-taxa", bairro: "Catolé", taxa: 8 };
+/** 18/11/2026 ao meio-dia em Campina Grande: primeira entrega em 20/11. */
+const AGORA = new Date("2026-11-18T12:00:00-03:00");
 
-function pedido(dados: Partial<DadosCliente>): Pedido {
+const CTX: ContextoValidacao = {
+  itens: 1,
+  entrega: CATOLE,
+  temNatal: true,
+  agora: AGORA,
+  regras: NATAL,
+};
+
+function dados(parcial: Partial<DadosCliente> = {}): DadosCliente {
   return {
-    quantidades: { branco: 1 },
-    dados: {
-      ...DADOS_VAZIOS,
-      nome: "Maria",
-      endereco: "Rua X, 123",
-      referencia: "Padaria",
-      data: "2026-09-26",
-      horario: "15:00",
-      ...dados,
-    },
+    ...DADOS_VAZIOS,
+    nome: "Maria",
+    bairro: "Catolé",
+    endereco: "Rua X, 123",
+    referencia: "Padaria",
+    data: "2026-11-20",
+    periodo: "Tarde",
+    ...parcial,
   };
 }
 
 describe("validarPedido", () => {
   it("pedido completo é válido", () => {
-    expect(validarPedido(pedido({}), 1, CATOLE, HOJE)).toEqual({});
+    expect(validarPedido(dados(), CTX)).toEqual({});
   });
 
-  it("exige pelo menos 1 morango", () => {
-    expect(validarPedido(pedido({}), 0, CATOLE, HOJE)).toHaveProperty("itens");
+  it("exige pelo menos 1 item", () => {
+    expect(validarPedido(dados(), { ...CTX, itens: 0 })).toEqual({
+      itens: "Escolha pelo menos 1 item.",
+    });
   });
 
   it("exige nome (espaços não contam)", () => {
-    expect(validarPedido(pedido({ nome: "   " }), 1, CATOLE, HOJE)).toHaveProperty(
-      "nome",
-    );
+    expect(validarPedido(dados({ nome: "   " }), CTX)).toHaveProperty("nome");
   });
 
   it("endereço e referência são sempre obrigatórios", () => {
-    const erros = validarPedido(
-      pedido({ endereco: " ", referencia: "" }),
-      1,
-      CATOLE,
-      HOJE,
-    );
+    const erros = validarPedido(dados({ endereco: " ", referencia: "" }), CTX);
     expect(Object.keys(erros).sort()).toEqual(["endereco", "referencia"]);
   });
 
-  it("exige data a partir de hoje e horário", () => {
-    expect(validarPedido(pedido({ data: "2026-09-23" }), 1, CATOLE, HOJE)).toHaveProperty(
-      "data",
+  it("data a partir de hoje + 2 dias, com a primeira data na mensagem", () => {
+    expect(validarPedido(dados({ data: "" }), CTX).data).toBe(
+      "Escolha a data da entrega.",
     );
-    expect(validarPedido(pedido({ data: HOJE }), 1, CATOLE, HOJE)).toEqual({});
-    expect(validarPedido(pedido({ horario: "" }), 1, CATOLE, HOJE)).toHaveProperty(
-      "horario",
+    expect(validarPedido(dados({ data: "2026-11-19" }), CTX).data).toBe(
+      "Os pedidos precisam de 2 dias de antecedência: escolha a partir de 20/11/2026.",
+    );
+    // Vale também para pedido só de morangos (P6).
+    expect(
+      validarPedido(dados({ data: "2026-11-19" }), { ...CTX, temNatal: false }),
+    ).toHaveProperty("data");
+  });
+
+  it("limite final e datas sem entrega, quando a dona configurar (P3)", () => {
+    const regras = {
+      ...NATAL,
+      ultimaDataEntrega: "2026-12-24",
+      datasSemEntrega: ["2026-12-23"],
+    };
+    expect(validarPedido(dados({ data: "2026-12-26" }), { ...CTX, regras }).data).toBe(
+      "A última data de entrega é 24/12/2026.",
+    );
+    expect(validarPedido(dados({ data: "2026-12-23" }), { ...CTX, regras }).data).toBe(
+      "Não há entrega nessa data. Escolha outra.",
     );
   });
 
-  it("exige bairro escolhido", () => {
-    expect(validarPedido(pedido({}), 1, { tipo: "sem-bairro" }, HOJE)).toEqual({
+  it("exige o horário preferido (Manhã/Tarde/Noite)", () => {
+    expect(validarPedido(dados({ periodo: "" }), CTX)).toEqual({
+      periodo: "Escolha o horário preferido.",
+    });
+  });
+
+  it("sem bairro, ou bairro de consulta, não valida", () => {
+    expect(validarPedido(dados(), { ...CTX, entrega: { tipo: "sem-bairro" } })).toEqual({
       bairro: "Escolha seu bairro.",
     });
-  });
-
-  it("bairro sem taxa automática bloqueia até consultar no WhatsApp", () => {
-    const erros = validarPedido(
-      pedido({}),
-      1,
-      { tipo: "consultar", bairro: "Cidades" },
-      HOJE,
-    );
-    expect(erros).toEqual({
-      bairro: "Consulte a taxa de entrega do seu bairro no WhatsApp.",
-    });
+    expect(
+      validarPedido(dados(), {
+        ...CTX,
+        entrega: { tipo: "consultar", bairro: "Cidades" },
+      }),
+    ).toEqual({ bairro: "Consulte a taxa de entrega do seu bairro no WhatsApp." });
   });
 
   it("observações são opcionais", () => {
-    expect(validarPedido(pedido({ observacoes: "" }), 1, CATOLE, HOJE)).toEqual({});
+    expect(validarPedido(dados({ observacoes: "" }), CTX)).toEqual({});
   });
 });

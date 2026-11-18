@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatarDataHorario, hojeISO } from "../../src/lib/dataHora";
+import { formatarTelefone } from "../../src/lib/mensagem";
 import { formatarReais } from "../../src/lib/moeda";
 
 describe("formatarReais", () => {
@@ -14,23 +14,13 @@ describe("formatarReais", () => {
   });
 });
 
-describe("formatarDataHorario", () => {
-  it("hora cheia vira '15h'", () => {
-    expect(formatarDataHorario("2026-09-26", "15:00")).toBe("26/09 às 15h");
+describe("formatarTelefone", () => {
+  it("tira o 55 e formata com DDD", () => {
+    expect(formatarTelefone("558382025788")).toBe("(83) 8202-5788");
+    expect(formatarTelefone("5583982025788")).toBe("(83) 98202-5788");
   });
 
-  it("hora quebrada vira '9h30' sem zero à esquerda", () => {
-    expect(formatarDataHorario("2026-12-03", "09:30")).toBe("03/12 às 9h30");
-  });
-
-  it("aceita campos vazios sem quebrar", () => {
-    expect(formatarDataHorario("2026-09-26", "")).toBe("26/09");
-    expect(formatarDataHorario("", "")).toBe("");
-  });
-});
-
-describe("hojeISO", () => {
-  it("usa a data local no formato do input date", () => {
-    expect(hojeISO(new Date(2026, 0, 5, 23, 59))).toBe("2026-01-05");
+  it("número curto demais volta como veio", () => {
+    expect(formatarTelefone("123")).toBe("123");
   });
 });

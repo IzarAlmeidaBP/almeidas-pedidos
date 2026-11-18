@@ -19,6 +19,10 @@
   /* Verde do WhatsApp escurecido para o texto branco ter contraste. */
   --color-whatsapp: #0f7a45;
   --color-whatsapp-escuro: #0b5f35;
+  /* Natal 2026: dourado do protótipo (bordas e enfeites). O claro é derivado, para
+     texto sobre o verde (contraste 7:1; o dourado puro dá só 4:1). */
+  --color-dourado: #b8975a;
+  --color-dourado-claro: #e3cb98;
 
   /* Largura máxima do conteúdo no computador (~1100px): classe max-w-site. */
   --container-site: 68.75rem;

@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from "react";
-import { Truck } from "lucide-react";
-import { Campo } from "../components/Campo";
+import { Check, Truck } from "lucide-react";
+import { Campo, MensagemErro } from "../components/Campo";
 import { SeletorBairro } from "../components/SeletorBairro";
 import { TituloSecao } from "../components/TituloSecao";
-import { hojeISO } from "../lib/dataHora";
+import { PERIODOS_ENTREGA } from "../config/natal";
+import { formatarDataBR } from "../lib/prazos";
 import type { CampoValidado } from "../lib/validacao";
 import { usePedido } from "../state/PedidoContext";
 import type { CampoDados } from "../types/pedido";
@@ -16,11 +17,12 @@ const ORDEM: CampoValidado[] = [
   "endereco",
   "referencia",
   "data",
-  "horario",
+  "periodo",
 ];
 
 export function Dados() {
-  const { estado, dispatch, entrega, erros, valido } = usePedido();
+  const { estado, dispatch, entrega, erros, valido, dataMinima, dataMaxima, regras } =
+    usePedido();
   const { dados } = estado;
   const [tocados, setTocados] = useState<Set<CampoDados>>(new Set());
 
@@ -30,8 +32,9 @@ export function Dados() {
   const atualizar = (campo: CampoDados, valor: string) =>
     dispatch({ type: "atualizarDado", campo, valor });
 
+  // Campo já preenchido mostra o erro na hora (ex.: data que deixou de valer).
   const erroVisivel = (campo: CampoDados) =>
-    tocados.has(campo) ? erros[campo] : undefined;
+    tocados.has(campo) || dados[campo] !== "" ? erros[campo] : undefined;
 
   function aoEnviar(evento: FormEvent) {
     evento.preventDefault();
@@ -44,7 +47,7 @@ export function Dados() {
     <section
       id="dados"
       aria-labelledby="titulo-dados"
-      className="scroll-mt-4 bg-white/60 py-12 xl:mb-12 xl:rounded-3xl xl:px-8"
+      className="scroll-mt-20 bg-white/60 py-12 xl:mb-12 xl:rounded-3xl xl:px-8"
     >
       <form
         noValidate
@@ -132,43 +135,76 @@ export function Dados() {
           )}
         </Campo>
 
-        <div>
-          <div className="grid gap-3 min-[360px]:grid-cols-2">
-            <Campo id="data" rotulo="Data" obrigatorio erro={erroVisivel("data")}>
-              {(props) => (
-                <input
-                  {...props}
-                  type="date"
-                  autoComplete="off"
-                  min={hojeISO()}
-                  value={dados.data}
-                  onChange={(e) => atualizar("data", e.target.value)}
-                  onBlur={() => tocar("data")}
-                />
-              )}
-            </Campo>
-            <Campo
-              id="horario"
-              rotulo="Horário"
-              obrigatorio
-              erro={erroVisivel("horario")}
-            >
-              {(props) => (
-                <input
-                  {...props}
-                  type="time"
-                  autoComplete="off"
-                  value={dados.horario}
-                  onChange={(e) => atualizar("horario", e.target.value)}
-                  onBlur={() => tocar("horario")}
-                />
-              )}
-            </Campo>
+        <Campo
+          id="data"
+          rotulo="Data da entrega"
+          obrigatorio
+          erro={erroVisivel("data")}
+          dica={`Pedidos com ${regras.antecedenciaDias} dias de antecedência: a partir de ${formatarDataBR(dataMinima)}.`}
+        >
+          {(props) => (
+            <input
+              {...props}
+              type="date"
+              autoComplete="off"
+              min={dataMinima}
+              max={dataMaxima}
+              value={dados.data}
+              onChange={(e) => atualizar("data", e.target.value)}
+              onBlur={() => tocar("data")}
+            />
+          )}
+        </Campo>
+
+        <fieldset
+          aria-describedby={erroVisivel("periodo") ? "periodo-erro" : undefined}
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget)) tocar("periodo");
+          }}
+        >
+          <legend className="mb-1.5 font-bold text-verde">
+            Horário preferido
+            <span className="text-vinho" aria-hidden>
+              {" "}
+              *
+            </span>
+          </legend>
+          <div className="grid grid-cols-3 gap-2">
+            {PERIODOS_ENTREGA.map((periodo) => {
+              const marcado = dados.periodo === periodo;
+              return (
+                <label
+                  key={periodo}
+                  className={`flex min-h-12 cursor-pointer items-center justify-center gap-1.5 rounded-2xl border-2 px-2 font-bold transition has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-vinho ${
+                    marcado
+                      ? "border-verde bg-verde text-creme"
+                      : "border-creme-escuro bg-white text-verde hover:border-verde"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="periodo"
+                    value={periodo}
+                    checked={marcado}
+                    onChange={() => {
+                      atualizar("periodo", periodo);
+                      tocar("periodo");
+                    }}
+                    className="sr-only"
+                  />
+                  {marcado && <Check aria-hidden className="size-4 shrink-0" />}
+                  {periodo}
+                </label>
+              );
+            })}
           </div>
+          {erroVisivel("periodo") && (
+            <MensagemErro id="periodo-erro">{erroVisivel("periodo")}</MensagemErro>
+          )}
           <p className="mt-2 text-sm text-tinta/65">
-            A loja confirma a disponibilidade da data e do horário pelo WhatsApp.
+            A loja confirma a data e o horário pelo WhatsApp.
           </p>
-        </div>
+        </fieldset>
 
         <Campo id="observacoes" rotulo="Observações">
           {(props) => (

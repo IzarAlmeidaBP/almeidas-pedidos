@@ -1,24 +1,26 @@
 import { Contador } from "../components/Contador";
 import { Foto } from "../components/Foto";
 import { TituloSecao } from "../components/TituloSecao";
+import { PRODUTOS_MORANGO } from "../config/catalogo";
 import { LOJA } from "../config/loja";
 import { formatarReais } from "../lib/moeda";
+import { quantidadeNoCarrinho } from "../lib/pedidoReducer";
 import { usePedido } from "../state/PedidoContext";
 
 export function Pedido() {
-  const { estado, dispatch } = usePedido();
+  const { estado, dispatch, regras } = usePedido();
 
   return (
-    <section id="pedido" aria-labelledby="titulo-pedido" className="scroll-mt-4 py-12">
+    <section id="pedido" aria-labelledby="titulo-pedido" className="scroll-mt-20 py-12">
       <div className="mx-auto max-w-3xl px-4 xl:max-w-none xl:px-0">
         <TituloSecao
           id="titulo-pedido"
-          titulo="Monte seu pedido"
+          titulo={regras.ativo ? "Escolha seus morangos" : "Monte seu pedido"}
           subtitulo={`Cada bombom sai por ${formatarReais(LOJA.precoUnidade)}. Pode misturar os sabores!`}
         />
         <ul className="grid gap-4 md:grid-cols-2">
-          {LOJA.sabores.map((sabor) => {
-            const qtd = estado.quantidades[sabor.id] ?? 0;
+          {PRODUTOS_MORANGO.map((sabor) => {
+            const qtd = quantidadeNoCarrinho(estado.carrinho, sabor);
             return (
               <li
                 key={sabor.id}
@@ -46,10 +48,10 @@ export function Pedido() {
                     rotulo={sabor.nome}
                     valor={qtd}
                     aoDiminuir={() =>
-                      dispatch({ type: "alterarQuantidade", id: sabor.id, delta: -1 })
+                      dispatch({ type: "alterarMorango", produto: sabor, delta: -1 })
                     }
                     aoAumentar={() =>
-                      dispatch({ type: "alterarQuantidade", id: sabor.id, delta: 1 })
+                      dispatch({ type: "alterarMorango", produto: sabor, delta: 1 })
                     }
                   />
                 </div>

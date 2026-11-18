@@ -1,23 +1,78 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import { BotaoCopiar } from "../components/BotaoCopiar";
+import { LinhasPedido } from "../components/LinhasPedido";
 import { LOJA } from "../config/loja";
-import { formatarDataHorario } from "../lib/dataHora";
-import { montarLinkWhatsApp, montarMensagem } from "../lib/mensagem";
+import { TEXTOS_NATAL } from "../config/natal";
+import {
+  formatarTelefone,
+  montarLinkWhatsApp,
+  montarMensagemCarrinho,
+} from "../lib/mensagem";
 import { formatarReais } from "../lib/moeda";
+import { formatarDataBR, revalidarEnvio } from "../lib/prazos";
+import { textoErroData } from "../lib/validacao";
 import { usePedido } from "../state/PedidoContext";
 
 export function Pagamento() {
-  const { estado, dispatch, totais, entrega } = usePedido();
-  const { dados, quantidades } = estado;
+  const {
+    estado,
+    dispatch,
+    catalogo,
+    regras,
+    agora,
+    relogio,
+    linhas,
+    temNatal,
+    totais,
+    entrega,
+  } = usePedido();
+  const { dados } = estado;
   const titulo = useRef<HTMLHeadingElement>(null);
+  /** Texto enviado (plano B, se o WhatsApp não abrir). */
+  const [enviado, setEnviado] = useState<string | null>(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
     titulo.current?.focus();
   }, []);
 
-  const link = montarLinkWhatsApp(LOJA.whatsapp, montarMensagem(estado, LOJA));
+  const mensagem = (instante: Date) =>
+    montarMensagemCarrinho(
+      { carrinho: estado.carrinho, dados },
+      { entrega: LOJA.entrega, catalogo, fusoHorario: regras.fusoHorario },
+      instante,
+    );
+
+  /**
+   * Revalida no clique: se a página ficou aberta e virou o dia, a data (ou o prazo
+   * do Natal) pode ter deixado de valer. Nesse caso não abre o WhatsApp.
+   */
+  function aoEnviar(evento: MouseEvent<HTMLAnchorElement>) {
+    const instante = relogio();
+    const { natalEncerrado, erroData } = revalidarEnvio(
+      dados.data,
+      instante,
+      regras,
+      temNatal,
+    );
+    if (natalEncerrado) {
+      evento.preventDefault();
+      dispatch({ type: "encerrarNatal", catalogo });
+      return;
+    }
+    if (erroData) {
+      evento.preventDefault();
+      dispatch({
+        type: "voltarParaEdicao",
+        aviso: `A data de entrega escolhida não está mais disponível. ${textoErroData(erroData, instante, regras)}`,
+      });
+      return;
+    }
+    const texto = mensagem(instante);
+    evento.currentTarget.href = montarLinkWhatsApp(LOJA.whatsapp, texto);
+    setEnviado(texto);
+  }
 
   return (
     <section aria-labelledby="titulo-pagamento" className="animate-surgir px-4 py-10">
@@ -36,23 +91,9 @@ export function Pagamento() {
 
         <div className="rounded-3xl bg-white p-5 shadow-sm">
           <h2 className="font-extrabold text-verde">Resumo do pedido</h2>
-          <ul className="mt-3 space-y-1.5">
-            {LOJA.sabores
-              .filter((s) => (quantidades[s.id] ?? 0) > 0)
-              .map((s) => {
-                const qtd = quantidades[s.id] ?? 0;
-                return (
-                  <li key={s.id} className="flex justify-between gap-3">
-                    <span>
-                      {qtd}x {s.nome}
-                    </span>
-                    <span className="tabular-nums">
-                      {formatarReais(qtd * LOJA.precoUnidade)}
-                    </span>
-                  </li>
-                );
-              })}
-          </ul>
+          <div className="mt-3">
+            <LinhasPedido linhas={linhas} />
+          </div>
           <dl className="mt-3 space-y-1.5 border-t border-creme-escuro pt-3 text-tinta/80">
             <div className="flex justify-between">
               <dt>Subtotal</dt>
@@ -70,19 +111,19 @@ export function Pagamento() {
             </div>
           </dl>
           <div className="mt-4 rounded-2xl bg-verde px-4 py-4 text-center text-creme">
-            <p className="text-sm uppercase tracking-widest text-creme/80">Total</p>
+            <p className="text-sm tracking-widest text-creme/80 uppercase">Total</p>
             <p className="text-4xl font-extrabold tabular-nums">
               {formatarReais(totais.total)}
             </p>
           </div>
           <p className="mt-4 text-sm text-tinta/75">
-            {dados.nome.trim()} · {formatarDataHorario(dados.data, dados.horario)}·{" "}
-            {dados.endereco.trim()}
+            {dados.nome.trim()} · Entrega em {formatarDataBR(dados.data)} ({dados.periodo}
+            ) · {dados.endereco.trim()}
           </p>
         </div>
 
         <div className="rounded-3xl border-2 border-rosa bg-rosa-claro/60 p-5">
-          <h2 className="font-extrabold text-verde">Pagamento via Pix</h2>
+          <h2 className="font-extrabold text-verde">Pagamento antecipado via Pix</h2>
           <dl className="mt-3 space-y-2">
             <div>
               <dt className="text-sm text-tinta/70">Chave Pix ({LOJA.pix.tipo})</dt>
@@ -106,14 +147,47 @@ export function Pagamento() {
         </p>
 
         <a
-          href={link}
+          href={montarLinkWhatsApp(LOJA.whatsapp, mensagem(agora))}
+          onClick={aoEnviar}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex min-h-16 w-full items-center justify-center gap-2 rounded-full bg-whatsapp px-4 text-base font-extrabold min-[360px]:px-6 min-[360px]:text-lg text-white shadow-lg transition hover:bg-whatsapp-escuro active:scale-[0.98]"
+          className="flex min-h-16 w-full items-center justify-center gap-2 rounded-full bg-whatsapp px-4 text-base font-extrabold text-white shadow-lg transition hover:bg-whatsapp-escuro active:scale-[0.98] min-[360px]:px-6 min-[360px]:text-lg"
         >
           <MessageCircle aria-hidden className="size-6" />
           Enviar pedido no WhatsApp
         </a>
+
+        {enviado !== null && (
+          <div className="rounded-3xl bg-white p-5 shadow-sm">
+            <h2 className="font-extrabold text-verde">O WhatsApp não abriu?</h2>
+            <p className="mt-1 text-tinta/80">
+              Copie o pedido abaixo e envie para{" "}
+              <strong className="whitespace-nowrap text-verde">
+                {formatarTelefone(LOJA.whatsapp)}
+              </strong>
+              .
+            </p>
+            <label htmlFor="texto-pedido" className="sr-only">
+              Texto do pedido
+            </label>
+            <textarea
+              id="texto-pedido"
+              readOnly
+              rows={8}
+              value={enviado}
+              className="mt-3 w-full rounded-2xl border-2 border-creme-escuro bg-creme px-3 py-2 text-base text-tinta"
+            />
+            <div className="mt-3">
+              <BotaoCopiar texto={enviado} rotulo="Copiar pedido" />
+            </div>
+          </div>
+        )}
+
+        {temNatal && (
+          <p className="rounded-3xl border border-dourado bg-verde px-5 py-4 text-center font-titulo text-2xl leading-snug text-creme">
+            {TEXTOS_NATAL.mensagemFinal}
+          </p>
+        )}
 
         <button
           type="button"

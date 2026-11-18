@@ -2,13 +2,17 @@ import { expect, type Page } from "@playwright/test";
 
 export const COMPUTADOR = 1280;
 
-/** Data daqui a 2 dias no formato do input date (AAAA-MM-DD). */
-export function dataFutura(): { iso: string; ddmm: string } {
-  const d = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
-  const aa = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return { iso: `${aa}-${mm}-${dd}`, ddmm: `${dd}/${mm}` };
+/**
+ * Relógio fixo: 18/11/2026 ao meio-dia em Campina Grande (primeira entrega em
+ * 20/11/2026). Assim os testes não dependem do dia em que rodam.
+ */
+export const AGORA = new Date("2026-11-18T12:00:00-03:00");
+export const DATA_ENTREGA = { iso: "2026-11-20", br: "20/11/2026" };
+
+/** Abre o site com o relógio fixo (Date) e os timers funcionando normalmente. */
+export async function abrir(page: Page, agora: Date = AGORA) {
+  await page.clock.setFixedTime(agora);
+  await page.goto("/");
 }
 
 export function largura(page: Page): number {
@@ -68,7 +72,14 @@ export async function escolherBairro(page: Page, busca: string, opcao: string) {
   await expect(radio).toBeChecked();
 }
 
-/** Preenche o pedido de exemplo (2 brancos, 1 preto, bairro Catolé). */
+/** Marca Manhã/Tarde/Noite (o radio fica escondido atrás do rótulo). */
+export async function escolherPeriodo(page: Page, periodo: string) {
+  const radio = page.getByRole("radio", { name: periodo, exact: true });
+  await page.locator("label", { has: radio }).click();
+  await expect(radio).toBeChecked();
+}
+
+/** Preenche o pedido de exemplo (2 brancos, 1 chocolate ao leite, bairro Catolé). */
 export async function montarPedidoCompleto(page: Page) {
   await page.getByRole("button", { name: "Adicionar 1 Morango branco" }).click();
   await page.getByRole("button", { name: "Adicionar 1 Morango branco" }).click();
@@ -78,7 +89,7 @@ export async function montarPedidoCompleto(page: Page) {
   await escolherBairro(page, "catole", "Catolé R$ 8,00");
   await page.getByLabel(/^Endereço completo/).fill("Rua X, 123");
   await page.getByLabel(/^Ponto de referência/).fill("perto da padaria");
-  await page.getByLabel(/^Data/).fill(dataFutura().iso);
-  await page.getByLabel(/^Horário/).fill("15:00");
+  await page.getByLabel(/^Data da entrega/).fill(DATA_ENTREGA.iso);
+  await escolherPeriodo(page, "Tarde");
   await page.getByLabel(/^Observações/).fill("é presente");
 }

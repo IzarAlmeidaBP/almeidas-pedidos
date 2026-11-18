@@ -3,7 +3,11 @@ import { Logo } from "../components/Logo";
 import { VideoHero } from "../components/VideoHero";
 import { LOJA } from "../config/loja";
 
-export function Hero() {
+/**
+ * Topo dos morangos. Com a campanha de Natal no ar, o logo e o h1 ficam no topo do
+ * Natal (`principal = false`) e aqui o título vira um h2 em texto.
+ */
+export function Hero({ principal = true }: { principal?: boolean }) {
   return (
     <section
       aria-labelledby="titulo-hero"
@@ -11,12 +15,21 @@ export function Hero() {
     >
       <div className="mx-auto grid max-w-site items-center gap-8 px-4 pt-8 pb-12 md:grid-cols-2 md:gap-12 md:pt-16 md:pb-20 deitado:grid-cols-[1fr_auto] deitado:gap-6 deitado:pt-6 deitado:pb-8">
         <div className="text-center md:text-left deitado:text-left">
-          <h1 id="titulo-hero">
-            <Logo
-              nome={LOJA.nome}
-              className="mx-auto h-auto w-40 drop-shadow-sm min-[375px]:w-44 sm:w-52 md:mx-0 md:w-60 deitado:mx-0 deitado:w-28"
-            />
-          </h1>
+          {principal ? (
+            <h1 id="titulo-hero">
+              <Logo
+                nome={LOJA.nome}
+                className="mx-auto h-auto w-40 drop-shadow-sm min-[375px]:w-44 sm:w-52 md:mx-0 md:w-60 deitado:mx-0 deitado:w-28"
+              />
+            </h1>
+          ) : (
+            <h2
+              id="titulo-hero"
+              className="font-titulo text-5xl leading-tight text-vinho sm:text-6xl deitado:text-4xl"
+            >
+              Morangos cravejados
+            </h2>
+          )}
           <p className="mt-6 text-2xl font-extrabold leading-snug text-verde sm:text-3xl deitado:mt-3 deitado:text-xl">
             Bombons de morango GIGANTES{" "}
             <span role="img" aria-label="morango">

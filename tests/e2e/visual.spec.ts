@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { esperarSemVazamento, montarPedidoCompleto } from "./utils";
+import { abrir, esperarSemVazamento, montarPedidoCompleto } from "./utils";
 
 /**
  * Checagem visual: sem vazamento e capturas de tela para revisão humana
@@ -21,7 +21,7 @@ for (const tela of TELAS) {
     });
 
     test(`página e pagamento em ${tela.nome}`, async ({ page }, info) => {
-      await page.goto("/");
+      await abrir(page);
       await page.evaluate(() => document.fonts.ready);
       await esperarSemVazamento(page);
       await page.screenshot({ path: info.outputPath(`${tela.nome}-inicio.png`) });

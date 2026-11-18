@@ -1,5 +1,5 @@
 import { expect, test, type Locator } from "@playwright/test";
-import { COMPUTADOR, esperarSemVazamento, largura } from "./utils";
+import { abrir, COMPUTADOR, esperarSemVazamento, largura } from "./utils";
 
 async function caixa(l: Locator) {
   const b = await l.boundingBox();
@@ -8,12 +8,13 @@ async function caixa(l: Locator) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await abrir(page);
 });
 
 test("botões − / + têm pelo menos 44×44px", async ({ page }) => {
+  // Morangos (2 sabores) e os 9 cards do Natal.
   const botoes = page.getByRole("group", { name: /Quantidade de/ }).getByRole("button");
-  await expect(botoes).toHaveCount(4);
+  await expect(botoes).toHaveCount(22);
   for (const b of await botoes.all()) {
     const { width, height } = await caixa(b);
     expect(width).toBeGreaterThanOrEqual(44);

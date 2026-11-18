@@ -1,5 +1,5 @@
-/** Quantidade por id de sabor. Sabores ausentes contam como 0. */
-export type Quantidades = Record<string, number>;
+/** Horário preferido de entrega (Natal 2026: só o período, sem hora exata). */
+export type PeriodoEntrega = "Manhã" | "Tarde" | "Noite";
 
 export interface DadosCliente {
   nome: string;
@@ -11,17 +11,12 @@ export interface DadosCliente {
   referencia: string;
   /** Formato do input date: AAAA-MM-DD */
   data: string;
-  /** Formato do input time: HH:MM */
-  horario: string;
+  /** "" = não escolhido. */
+  periodo: PeriodoEntrega | "";
   observacoes: string;
 }
 
 export type CampoDados = keyof DadosCliente;
-
-export interface Pedido {
-  quantidades: Quantidades;
-  dados: DadosCliente;
-}
 
 export interface Totais {
   itens: number;

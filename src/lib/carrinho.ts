@@ -7,7 +7,10 @@ import type {
 } from "../types/carrinho";
 import type { Sabor } from "../types/loja";
 import type { Totais } from "../types/pedido";
-import { QUANTIDADE_MAXIMA } from "./pedidoReducer";
+import { formatarReais } from "./moeda";
+
+/** Limite por linha do carrinho (proteção contra toque repetido; não é regra da loja). */
+export const QUANTIDADE_MAXIMA = 99;
 
 const centavos = (valor: number) => Math.round(valor * 100);
 
@@ -176,6 +179,19 @@ export function montarLinhas(
         opcoes,
       },
     ];
+  });
+}
+
+/**
+ * Opções escolhidas de uma linha, como aparecem na tela e na mensagem:
+ * "Recheio: Oreo", "Adicionais: Kinder Bueno (+R$ 10,00)".
+ */
+export function textosOpcoes(linha: LinhaCarrinho): string[] {
+  return linha.opcoes.map(({ grupo, escolhidas }) => {
+    const nomes = escolhidas.map((o) =>
+      o.acrescimo > 0 ? `${o.nome} (+${formatarReais(o.acrescimo)})` : o.nome,
+    );
+    return `${grupo.rotulo}: ${nomes.join(", ")}`;
   });
 }
 
