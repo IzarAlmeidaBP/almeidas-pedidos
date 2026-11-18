@@ -24,6 +24,9 @@ for (const tela of TELAS) {
       await abrir(page);
       await page.evaluate(() => document.fonts.ready);
       await esperarSemVazamento(page);
+      // A navegação fixa do Natal tem rolagem própria (ignorada acima): confere à parte.
+      const nav = page.getByRole("navigation", { name: "Categorias" }).getByRole("list");
+      expect(await nav.evaluate((ul) => ul.scrollWidth <= ul.clientWidth)).toBe(true);
       await page.screenshot({ path: info.outputPath(`${tela.nome}-inicio.png`) });
 
       await montarPedidoCompleto(page);

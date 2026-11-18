@@ -195,6 +195,11 @@ export function textosOpcoes(linha: LinhaCarrinho): string[] {
   });
 }
 
+/** Para a tela: o preço não quebra entre "R$" e o valor. */
+export function semQuebraNoPreco(texto: string): string {
+  return texto.replace(/R\$ /g, "R$ ");
+}
+
 /** Tem algum item de Natal no carrinho? */
 export function temItensNatal(carrinho: Carrinho, catalogo: readonly Produto[]): boolean {
   return montarLinhas(carrinho, catalogo).some((l) => l.produto.natal);

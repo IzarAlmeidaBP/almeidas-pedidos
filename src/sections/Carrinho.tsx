@@ -1,7 +1,7 @@
 import { Trash2 } from "lucide-react";
 import { Contador } from "../components/Contador";
 import { TituloSecao } from "../components/TituloSecao";
-import { textosOpcoes } from "../lib/carrinho";
+import { semQuebraNoPreco, textosOpcoes } from "../lib/carrinho";
 import { formatarReais } from "../lib/moeda";
 import { usePedido } from "../state/PedidoContext";
 
@@ -33,7 +33,7 @@ export function Carrinho() {
             <ul aria-label="Itens do carrinho" className="divide-y divide-creme-escuro">
               {linhas.map((linha) => {
                 const { item, produto } = linha;
-                const opcoes = textosOpcoes(linha);
+                const opcoes = textosOpcoes(linha).map(semQuebraNoPreco);
                 const descricao = [produto.nome, ...opcoes].join(", ");
                 return (
                   <li key={item.chave} className="py-4 first:pt-1 last:pb-1">
