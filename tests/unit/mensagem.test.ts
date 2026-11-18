@@ -156,15 +156,15 @@ describe("montarMensagemCarrinho (contrato com a loja, seção 5.1)", () => {
 
 describe("montarLinkWhatsApp", () => {
   it("monta o link wa.me com a mensagem codificada", () => {
-    const link = montarLinkWhatsApp("558382025788", "Oi 🍓\nTotal: R$ 14,00");
+    const link = montarLinkWhatsApp("5583982025788", "Oi 🍓\nTotal: R$ 14,00");
     expect(link).toBe(
-      "https://wa.me/558382025788?text=Oi%20%F0%9F%8D%93%0ATotal%3A%20R%24%2014%2C00",
+      "https://wa.me/5583982025788?text=Oi%20%F0%9F%8D%93%0ATotal%3A%20R%24%2014%2C00",
     );
   });
 
   it("remove caracteres que não são dígitos do número", () => {
-    expect(montarLinkWhatsApp("+55 (83) 8202-5788", "x")).toBe(
-      "https://wa.me/558382025788?text=x",
+    expect(montarLinkWhatsApp("+55 (83) 98202-5788", "x")).toBe(
+      "https://wa.me/5583982025788?text=x",
     );
   });
 });

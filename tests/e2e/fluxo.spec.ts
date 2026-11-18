@@ -48,7 +48,7 @@ test("fluxo completo: sabores → dados → pagamento → link do WhatsApp", asy
   await expect(whatsapp).toBeVisible();
   await expect(whatsapp).toHaveAttribute("target", "_blank");
   const url = new URL((await whatsapp.getAttribute("href")) ?? "");
-  expect(url.origin + url.pathname).toBe("https://wa.me/558382025788");
+  expect(url.origin + url.pathname).toBe("https://wa.me/5583982025788");
   expect(url.searchParams.get("text")).toBe(
     [
       "🍓 NOVO PEDIDO – ENTREGA",
@@ -159,7 +159,7 @@ test("bairro fora da lista: bloqueia o pagamento e consulta no WhatsApp", async 
   await expect(consulta).toBeVisible();
   await expect(consulta).toHaveAttribute("target", "_blank");
   const url = new URL((await consulta.getAttribute("href")) ?? "");
-  expect(url.origin + url.pathname).toBe("https://wa.me/558382025788");
+  expect(url.origin + url.pathname).toBe("https://wa.me/5583982025788");
   expect(url.searchParams.get("text")).toBe(
     "Olá! Moro no bairro Velame e gostaria de saber a taxa de entrega.",
   );

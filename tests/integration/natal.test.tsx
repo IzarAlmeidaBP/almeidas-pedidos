@@ -302,7 +302,7 @@ describe("Natal 2026: prazos", () => {
       screen.getByText("Encomendas de Natal encerradas 🎄 Obrigada pelo carinho!"),
     ).toBeInTheDocument();
     const falar = screen.getByRole("link", { name: "Falar no WhatsApp" });
-    expect(falar).toHaveAttribute("href", "https://wa.me/558382025788");
+    expect(falar).toHaveAttribute("href", "https://wa.me/5583982025788");
     expect(falar).toHaveAttribute("target", "_blank");
 
     const g = card("Guirlanda de Natal");

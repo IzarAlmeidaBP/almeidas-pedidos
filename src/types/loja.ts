@@ -23,7 +23,7 @@ export interface ConfigEntrega {
 export interface ConfigLoja {
   nome: string;
   cidade: string;
-  /** Somente dígitos, com DDI e DDD. Ex.: 558382025788 */
+  /** Somente dígitos, com DDI e DDD. Ex.: 5583982025788 */
   whatsapp: string;
   pix: {
     chave: string;

@@ -138,7 +138,7 @@ test("Natal: Guirlanda com opções → Mini → Taça → carrinho → checkout
   const whatsapp = page.getByRole("link", { name: "Enviar pedido no WhatsApp" });
   await expect(whatsapp).toHaveAttribute("target", "_blank");
   const url = new URL((await whatsapp.getAttribute("href")) ?? "");
-  expect(url.origin + url.pathname).toBe("https://wa.me/558382025788");
+  expect(url.origin + url.pathname).toBe("https://wa.me/5583982025788");
   expect(url.searchParams.get("text")).toBe(
     [
       "🎄 ENCOMENDA DE NATAL – ENTREGA",
@@ -238,7 +238,7 @@ test.describe("relógio simulado", () => {
       page.getByText("Encomendas de Natal encerradas 🎄 Obrigada pelo carinho!"),
     ).toBeVisible();
     const falar = page.getByRole("link", { name: "Falar no WhatsApp" });
-    await expect(falar).toHaveAttribute("href", "https://wa.me/558382025788");
+    await expect(falar).toHaveAttribute("href", "https://wa.me/5583982025788");
 
     await expect(page.getByRole("article")).toHaveCount(9);
     for (const botao of await page

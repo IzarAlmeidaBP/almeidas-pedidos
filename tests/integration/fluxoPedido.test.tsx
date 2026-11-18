@@ -64,7 +64,7 @@ describe("fluxo completo do pedido (morangos)", () => {
 
     const whatsapp = screen.getByRole("link", { name: "Enviar pedido no WhatsApp" });
     const url = new URL(whatsapp.getAttribute("href") ?? "");
-    expect(url.origin + url.pathname).toBe("https://wa.me/558382025788");
+    expect(url.origin + url.pathname).toBe("https://wa.me/5583982025788");
     expect(url.searchParams.get("text")).toBe(
       [
         "🍓 NOVO PEDIDO – ENTREGA",
@@ -184,7 +184,7 @@ describe("fluxo completo do pedido (morangos)", () => {
     expect(within(resumo).queryByRole("button", { name: "Finalizar pedido" })).toBeNull();
 
     const consulta = linkWhatsApp("Consultar entrega no WhatsApp");
-    expect(consulta.origin + consulta.pathname).toBe("https://wa.me/558382025788");
+    expect(consulta.origin + consulta.pathname).toBe("https://wa.me/5583982025788");
     expect(consulta.searchParams.get("text")).toBe(
       "Olá! Moro no bairro Velame e gostaria de saber a taxa de entrega.",
     );
@@ -253,7 +253,7 @@ describe("fluxo completo do pedido (morangos)", () => {
     await user.click(link);
 
     expect(screen.getByText("O WhatsApp não abriu?")).toBeInTheDocument();
-    expect(screen.getByText("(83) 8202-5788")).toBeInTheDocument();
+    expect(screen.getByText("(83) 98202-5788")).toBeInTheDocument();
     const texto = screen.getByLabelText("Texto do pedido");
     expect(texto).toHaveValue(
       new URL(link.getAttribute("href") ?? "").searchParams.get("text"),

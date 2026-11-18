@@ -7,7 +7,7 @@ import type { ConfigLoja } from "../types/loja";
 export const LOJA = {
   nome: "Almeida's – Confectionery Art",
   cidade: "Campina Grande/PB",
-  whatsapp: "558382025788", // (83) 8202-5788
+  whatsapp: "5583982025788", // (83) 98202-5788
   pix: {
     chave: "1fc14c73-dc2a-4454-b933-ce1c0c8f8131",
     tipo: "Aleatória",
