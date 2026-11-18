@@ -42,14 +42,15 @@ export function OpcoesProduto({
           {!unica && grupo.min === grupo.max && ` (${escolhidas.length}/${grupo.max})`}
         </span>
       </legend>
-      <div className="flex flex-wrap gap-2">
+      {/* Chips em 2 colunas iguais: quebram linha de forma organizada. */}
+      <div className="grid grid-cols-2 gap-2">
         {grupo.opcoes.map((opcao) => {
           const marcada = escolhidas.includes(opcao.id);
           const bloqueada = desativado || (cheio && !marcada);
           return (
             <label
               key={opcao.id}
-              className={`flex min-h-11 items-center gap-1.5 rounded-full border-2 px-4 py-1.5 text-sm font-bold transition has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-vinho ${
+              className={`flex min-h-12 items-center justify-center gap-2 rounded-2xl border-2 px-3 py-2 text-center text-sm leading-tight font-bold transition has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-vinho ${
                 marcada
                   ? "border-vinho bg-vinho text-creme"
                   : bloqueada
@@ -67,13 +68,17 @@ export function OpcoesProduto({
                 className="sr-only"
               />
               {marcada && <Check aria-hidden className="size-4 shrink-0" />}
-              {opcao.nome}
-              {opcao.acrescimo > 0 && " "}
-              {opcao.acrescimo > 0 && (
-                <span className={marcada ? "text-creme/85" : "text-tinta/70"}>
-                  +{formatarReais(opcao.acrescimo)}
-                </span>
-              )}
+              <span>
+                {opcao.nome}
+                {opcao.acrescimo > 0 && " "}
+                {opcao.acrescimo > 0 && (
+                  <span
+                    className={`block font-semibold whitespace-nowrap ${marcada ? "text-creme/85" : "text-tinta/70"}`}
+                  >
+                    +{formatarReais(opcao.acrescimo)}
+                  </span>
+                )}
+              </span>
             </label>
           );
         })}

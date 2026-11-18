@@ -75,7 +75,7 @@ export function Pagamento() {
   }
 
   return (
-    <section aria-labelledby="titulo-pagamento" className="animate-surgir px-4 py-10">
+    <section aria-labelledby="titulo-pagamento" className="secao conteudo animate-surgir">
       <div className="mx-auto max-w-md space-y-6">
         <header className="text-center">
           <h1
@@ -89,12 +89,12 @@ export function Pagamento() {
           <p className="mt-2 text-tinta/75">Confira o pedido e faça o Pix.</p>
         </header>
 
-        <div className="rounded-3xl bg-white p-5 shadow-sm">
+        <div className="rounded-3xl bg-white p-6 shadow-sm">
           <h2 className="font-extrabold text-verde">Resumo do pedido</h2>
           <div className="mt-3">
             <LinhasPedido linhas={linhas} />
           </div>
-          <dl className="mt-3 space-y-1.5 border-t border-creme-escuro pt-3 text-tinta/80">
+          <dl className="mt-3 space-y-2 border-t border-creme-escuro pt-3 text-tinta/80">
             <div className="flex justify-between">
               <dt>Subtotal</dt>
               <dd className="tabular-nums">{formatarReais(totais.subtotal)}</dd>
@@ -122,7 +122,7 @@ export function Pagamento() {
           </p>
         </div>
 
-        <div className="rounded-3xl border-2 border-rosa bg-rosa-claro/60 p-5">
+        <div className="rounded-3xl border-2 border-rosa bg-rosa-claro/60 p-6">
           <h2 className="font-extrabold text-verde">Pagamento antecipado via Pix</h2>
           <dl className="mt-3 space-y-2">
             <div>
@@ -158,7 +158,7 @@ export function Pagamento() {
         </a>
 
         {enviado !== null && (
-          <div className="rounded-3xl bg-white p-5 shadow-sm">
+          <div className="rounded-3xl bg-white p-6 shadow-sm">
             <h2 className="font-extrabold text-verde">O WhatsApp não abriu?</h2>
             <p className="mt-1 text-tinta/80">
               Copie o pedido abaixo e envie para{" "}
@@ -184,7 +184,7 @@ export function Pagamento() {
         )}
 
         {temNatal && (
-          <p className="rounded-3xl border border-dourado bg-verde px-5 py-4 text-center font-titulo text-2xl leading-snug text-creme">
+          <p className="rounded-3xl border border-dourado bg-verde px-6 py-4 text-center font-titulo text-2xl leading-snug text-creme">
             {TEXTOS_NATAL.mensagemFinal}
           </p>
         )}
@@ -192,7 +192,7 @@ export function Pagamento() {
         <button
           type="button"
           onClick={() => dispatch({ type: "voltarParaEdicao" })}
-          className="mx-auto flex min-h-12 items-center gap-2 rounded-full px-5 font-bold text-vinho underline-offset-4 hover:underline"
+          className="mx-auto flex min-h-12 items-center gap-2 rounded-full px-6 font-bold text-vinho underline-offset-4 hover:underline"
         >
           <ArrowLeft aria-hidden className="size-5" />
           Voltar e editar pedido

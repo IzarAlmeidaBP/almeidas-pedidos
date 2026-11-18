@@ -24,8 +24,13 @@
   --color-dourado: #b8975a;
   --color-dourado-claro: #e3cb98;
 
-  /* Largura máxima do conteúdo no computador (~1100px): classe max-w-site. */
+  /* Largura máxima do conteúdo (~1100px): classe max-w-site e utilitário "conteudo". */
   --container-site: 68.75rem;
+
+  /* Escala de espaçamento: o Tailwind multiplica --spacing (4px). Só usamos os passos
+     1, 2, 3, 4, 6, 8, 12 e 16 = 4, 8, 12, 16, 24, 32, 48 e 64px (p-*, m-*, gap-*,
+     space-*). tests/unit/espacamento.test.ts recusa qualquer outro valor. */
+  --spacing: 0.25rem;
 
   --font-titulo: "Dancing Script", "Brush Script MT", cursive;
   --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
@@ -57,23 +62,66 @@
   }
 }
 
+/* Layout: margem lateral única (16px celular, 24px tablet, 32px computador), altura do
+   cabeçalho fixo (para os links do menu não esconderem o título da seção). */
+:root {
+  --margem: --spacing(4);
+  --altura-cabecalho: calc(--spacing(16) + env(safe-area-inset-top, 0px));
+}
+@media (width >= 48rem) {
+  :root {
+    --margem: --spacing(6);
+  }
+}
+@media (width >= 80rem) {
+  :root {
+    --margem: --spacing(8);
+  }
+}
+
+/* Container único: até ~1100px de conteúdo, centralizado, com a mesma margem lateral
+   em todas as seções. */
+@utility conteudo {
+  width: 100%;
+  margin-inline: auto;
+  max-width: calc(var(--container-site) + 2 * var(--margem));
+  padding-inline: var(--margem);
+}
+
+/* Mesmo espaço vertical em todas as seções: 32px em cima e embaixo no celular (64px
+   entre duas seções) e 48px a partir do tablet (96px entre seções). */
+@utility secao {
+  padding-block: --spacing(8);
+  @variant md {
+    padding-block: --spacing(12);
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Âncoras (#guirlandas, #tacas...) param abaixo do cabeçalho fixo. */
+    scroll-padding-top: calc(var(--altura-cabecalho) + --spacing(4));
     -webkit-text-size-adjust: 100%;
   }
 
   body {
     @apply bg-creme font-sans text-tinta antialiased;
-    /* Área segura do iPhone (notch em retrato e em paisagem). A barra fixa e o
-       rodapé cuidam da borda de baixo. */
-    padding-top: env(safe-area-inset-top, 0px);
+    /* Área segura do iPhone nas laterais (paisagem). O cabeçalho cuida do topo; a
+       barra fixa e o rodapé, da borda de baixo. */
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
   }
 
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-vinho;
+  }
+
+  /* Títulos sem palavra sozinha na última linha. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
 }
 

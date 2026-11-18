@@ -10,16 +10,12 @@ export function Carrinho() {
   const { linhas, totais, dispatch, regras } = usePedido();
 
   return (
-    <section
-      id="carrinho"
-      aria-labelledby="titulo-carrinho"
-      className="scroll-mt-20 py-12"
-    >
-      <div className="mx-auto max-w-xl px-4 xl:px-0">
+    <section id="carrinho" aria-labelledby="titulo-carrinho" className="secao">
+      <div>
         <TituloSecao id="titulo-carrinho" titulo="Seu carrinho" />
 
         {linhas.length === 0 ? (
-          <p className="rounded-3xl bg-white px-5 py-6 text-center text-tinta/75 shadow-sm">
+          <p className="rounded-3xl bg-white px-6 py-6 text-center text-tinta/75 shadow-sm">
             Seu carrinho está vazio.{" "}
             <a
               href={regras.ativo ? "#guirlandas" : "#pedido"}
@@ -29,7 +25,7 @@ export function Carrinho() {
             </a>
           </p>
         ) : (
-          <div className="rounded-3xl bg-white p-4 shadow-sm sm:p-5">
+          <div className="rounded-3xl bg-white p-4 shadow-sm sm:p-6">
             <ul aria-label="Itens do carrinho" className="divide-y divide-creme-escuro">
               {linhas.map((linha) => {
                 const { item, produto } = linha;
@@ -75,7 +71,7 @@ export function Carrinho() {
                           dispatch({ type: "removerItem", chave: item.chave })
                         }
                         aria-label={`Remover do carrinho: ${descricao}`}
-                        className="flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm font-bold text-vinho transition hover:bg-rosa-claro"
+                        className="flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-bold text-vinho transition hover:bg-rosa-claro"
                       >
                         <Trash2 aria-hidden className="size-4" />
                         Remover

@@ -29,3 +29,6 @@ desktop.ini
 test-results/
 playwright-report/
 blob-report/
+
+# Capturas de tela de revisão visual (fora do Git)
+screenshots/

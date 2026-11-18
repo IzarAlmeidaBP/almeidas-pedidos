@@ -51,7 +51,7 @@ export function SeletorBairro({
         if (!e.currentTarget.contains(e.relatedTarget)) aoSair();
       }}
     >
-      <legend className="mb-1.5 font-bold text-verde">
+      <legend className="mb-2 font-bold text-verde">
         Bairro
         <span className="text-vinho" aria-hidden>
           {" "}
@@ -75,7 +75,7 @@ export function SeletorBairro({
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Buscar bairro"
-          className={`${classeEntrada} border-creme-escuro pl-11`}
+          className={`${classeEntrada} border-creme-escuro pl-12`}
         />
       </div>
 
@@ -117,7 +117,7 @@ export function SeletorBairro({
 
       {foraDaLista && (
         <div className="mt-3">
-          <label htmlFor="bairro-outro" className="mb-1.5 block font-bold text-verde">
+          <label htmlFor="bairro-outro" className="mb-2 block font-bold text-verde">
             Qual é o seu bairro?
           </label>
           <input
@@ -149,7 +149,7 @@ export function SeletorBairro({
               )}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-whatsapp px-5 py-2 text-center font-extrabold text-white transition hover:bg-whatsapp-escuro active:scale-[0.98]"
+              className="mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-whatsapp px-6 py-2 text-center font-extrabold text-white transition hover:bg-whatsapp-escuro active:scale-[0.98]"
             >
               <MessageCircle aria-hidden className="size-5" />
               Consultar entrega no WhatsApp

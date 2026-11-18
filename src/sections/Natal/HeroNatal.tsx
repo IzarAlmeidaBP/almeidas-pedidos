@@ -6,26 +6,29 @@ import { TEXTOS_NATAL } from "../../config/natal";
 export function HeroNatal() {
   return (
     <section
+      id="natal"
       aria-labelledby="titulo-natal"
-      className="relative overflow-hidden bg-[radial-gradient(circle_at_50%_28%,#1d6b37_0,var(--color-verde)_55%,var(--color-verde-escuro)_100%)] px-4 pt-10 pb-12 text-center text-creme md:pt-14 md:pb-16 deitado:pt-6 deitado:pb-8"
+      className="secao relative overflow-hidden bg-[radial-gradient(circle_at_50%_28%,#1d6b37_0,var(--color-verde)_55%,var(--color-verde-escuro)_100%)] text-center text-creme"
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-3 rounded-3xl border border-dourado/60 sm:inset-4"
+        className="pointer-events-none absolute inset-3 rounded-3xl border border-dourado/60 md:inset-4"
       />
-      <div className="relative mx-auto max-w-xl">
+      <div className="conteudo relative">
         <Logo
           nome={LOJA.nome}
-          className="mx-auto size-36 rounded-full object-contain border-[3px] border-dourado bg-white p-1 shadow-[0_0_0_8px_rgba(184,151,90,0.18),0_10px_30px_rgba(0,0,0,0.35)] min-[375px]:size-40 md:size-44 deitado:size-24"
+          className="mx-auto size-36 rounded-full border-[3px] border-dourado bg-white object-contain p-1 shadow-[0_0_0_8px_rgba(184,151,90,0.18),0_10px_30px_rgba(0,0,0,0.35)] md:size-44 deitado:size-24"
         />
         <h1
           id="titulo-natal"
-          className="mt-5 font-titulo text-5xl leading-tight text-creme sm:text-6xl deitado:mt-3 deitado:text-4xl"
+          className="mt-6 font-titulo text-5xl leading-tight text-creme sm:text-6xl deitado:mt-3 deitado:text-4xl"
         >
           {TEXTOS_NATAL.titulo}
         </h1>
-        <p className="mt-2 text-lg text-rosa-claro/90">{TEXTOS_NATAL.subtitulo}</p>
-        <p className="mt-5 text-xs font-bold tracking-[0.12em] text-dourado-claro uppercase min-[375px]:text-sm sm:tracking-[0.18em]">
+        <p className="mx-auto mt-2 max-w-md text-lg text-rosa-claro/90">
+          {TEXTOS_NATAL.subtitulo}
+        </p>
+        <p className="mt-6 text-xs font-bold tracking-[0.12em] text-dourado-claro uppercase min-[375px]:text-sm sm:tracking-[0.18em]">
           {/* As estrelas ficam presas à primeira e à última palavra. */}
           {TEXTOS_NATAL.selo.replace(/^(\S+) /, "$1 ").replace(/ (\S+)$/, " $1")}
         </p>

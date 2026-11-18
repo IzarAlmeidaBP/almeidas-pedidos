@@ -27,7 +27,7 @@ export function Campo({ id, rotulo, obrigatorio, erro, dica, children }: CampoPr
 
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block font-bold text-verde">
+      <label htmlFor={id} className="mb-2 block font-bold text-verde">
         {rotulo}
         {obrigatorio ? (
           <span className="text-vinho" aria-hidden>
@@ -56,10 +56,7 @@ export function Campo({ id, rotulo, obrigatorio, erro, dica, children }: CampoPr
 
 export function MensagemErro({ id, children }: { id?: string; children: ReactNode }) {
   return (
-    <p
-      id={id}
-      className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-vinho"
-    >
+    <p id={id} className="mt-2 flex items-center gap-2 text-sm font-semibold text-vinho">
       <CircleAlert aria-hidden className="size-4 shrink-0" />
       {children}
     </p>

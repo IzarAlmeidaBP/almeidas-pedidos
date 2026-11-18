@@ -4,8 +4,8 @@ import { GALERIA } from "../config/galeria";
 
 export function Galeria() {
   return (
-    <section aria-labelledby="titulo-galeria" className="py-12">
-      <div className="mx-auto max-w-site px-4">
+    <section aria-labelledby="titulo-galeria" className="secao">
+      <div className="conteudo">
         <TituloSecao
           id="titulo-galeria"
           titulo="Feitos à mão"
@@ -14,7 +14,7 @@ export function Galeria() {
       </div>
       {/* Celular: carrossel com deslize. Tablet: 2 colunas. Computador: 4 colunas. */}
       <ul
-        className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-4 pb-4 md:mx-auto md:grid md:max-w-site md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 xl:grid-cols-4"
+        className="conteudo flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto overscroll-x-contain pb-4 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 xl:grid-cols-4"
         aria-label="Fotos dos bombons"
       >
         {GALERIA.map((item) => (
@@ -31,7 +31,10 @@ export function Galeria() {
           </li>
         ))}
       </ul>
-      <p className="mt-1 text-center text-sm text-tinta/60 md:hidden" aria-hidden>
+      <p
+        className="conteudo mt-1 text-center text-sm text-tinta/60 md:hidden"
+        aria-hidden
+      >
         Arraste para o lado para ver mais fotos
       </p>
     </section>

@@ -136,9 +136,13 @@ test("total: barra fixa no rodapé (celular/tablet) ou resumo sticky (computador
   } else {
     await expect(barra).toBeHidden();
     await expect(resumo).toBeVisible();
-    // Conteúdo centralizado com largura máxima de ~1100px.
-    const grade = await caixa(page.locator("main > div.max-w-site"));
-    expect(grade.width).toBeLessThanOrEqual(1100);
+    // Conteúdo centralizado com largura máxima de ~1100px (sem contar a margem).
+    const grade = await caixa(page.locator("main > div.conteudo").last());
+    const margem = await page
+      .locator("main > div.conteudo")
+      .last()
+      .evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft));
+    expect(grade.width - 2 * margem).toBeLessThanOrEqual(1100);
     expect(Math.abs(grade.x - (w - grade.x - grade.width))).toBeLessThan(2);
     // Pedido e resumo lado a lado.
     const pedido = await caixa(page.locator("#pedido"));
@@ -149,4 +153,75 @@ test("total: barra fixa no rodapé (celular/tablet) ou resumo sticky (computador
     await page.mouse.wheel(0, 400);
     await expect(resumo).toBeInViewport();
   }
+});
+
+test("container único: todas as seções com a mesma margem lateral", async ({ page }) => {
+  const w = largura(page);
+  const margemEsperada = w >= COMPUTADOR ? 32 : w >= 768 ? 24 : 16;
+  const bordas = await page.locator(".conteudo").evaluateAll((els) =>
+    els
+      .filter((el) => el.getBoundingClientRect().width > 0)
+      .map((el) => {
+        const r = el.getBoundingClientRect();
+        const pl = parseFloat(getComputedStyle(el).paddingLeft);
+        const pr = parseFloat(getComputedStyle(el).paddingRight);
+        return {
+          esquerda: Math.round(r.left + pl),
+          direita: Math.round(r.right - pr),
+          pl,
+        };
+      }),
+  );
+  expect(bordas.length).toBeGreaterThan(5);
+  const esquerdas = new Set(bordas.map((b) => b.esquerda));
+  const direitas = new Set(bordas.map((b) => b.direita));
+  expect([...esquerdas], "borda esquerda do conteúdo").toHaveLength(1);
+  expect([...direitas], "borda direita do conteúdo").toHaveLength(1);
+  for (const b of bordas) expect(b.pl).toBe(margemEsperada);
+  // Até ~1100px de conteúdo.
+  expect([...direitas][0]! - [...esquerdas][0]!).toBeLessThanOrEqual(1100);
+});
+
+test("cards da mesma linha: mesma altura e botão alinhado no rodapé", async ({
+  page,
+}) => {
+  const cards = page.getByRole("article");
+  await expect(cards).toHaveCount(9);
+  const medidas = await cards.evaluateAll((els) =>
+    els.map((el) => {
+      const r = el.getBoundingClientRect();
+      const botao = el.querySelector("button:last-of-type")?.getBoundingClientRect();
+      const foto = el.querySelector("img")?.getBoundingClientRect();
+      return {
+        topo: Math.round(r.top + window.scrollY),
+        altura: Math.round(r.height),
+        fundoBotao: Math.round((botao?.bottom ?? 0) - r.bottom),
+        foto: foto ? Math.round((foto.width / foto.height) * 100) / 100 : 0,
+      };
+    }),
+  );
+  const linhas = new Map<number, typeof medidas>();
+  for (const m of medidas) linhas.set(m.topo, [...(linhas.get(m.topo) ?? []), m]);
+  for (const linha of linhas.values()) {
+    expect(new Set(linha.map((m) => m.altura)).size, "altura na linha").toBe(1);
+    expect(new Set(linha.map((m) => m.fundoBotao)).size, "botão na linha").toBe(1);
+  }
+  // Colunas: 1 no celular, 2 no tablet e 3 taças no computador.
+  const maiorLinha = Math.max(...[...linhas.values()].map((l) => l.length));
+  const w = largura(page);
+  expect(maiorLinha).toBe(w >= COMPUTADOR ? 3 : w >= 768 ? 2 : 1);
+  // Fotos com proporção fixa: guirlandas 1:1 e taças 3:4.
+  expect(medidas.slice(0, 2).every((m) => m.foto === 1)).toBe(true);
+  expect(medidas.slice(2).every((m) => m.foto === 0.75)).toBe(true);
+});
+
+test("títulos de seção com o mesmo estilo e centralizados", async ({ page }) => {
+  const estilos = await page.locator("main section header h2").evaluateAll((els) =>
+    els.map((el) => {
+      const cs = getComputedStyle(el);
+      return `${cs.fontFamily}|${cs.fontSize}|${cs.textAlign}|${cs.lineHeight}`;
+    }),
+  );
+  expect(estilos.length).toBeGreaterThanOrEqual(7);
+  expect(new Set(estilos).size).toBe(1);
 });

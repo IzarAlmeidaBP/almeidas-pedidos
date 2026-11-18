@@ -22,32 +22,34 @@ export function Rodape({
 }) {
   return (
     <footer
-      className={`bg-verde px-4 pt-10 text-center text-creme ${
+      className={`bg-verde pt-12 text-center text-creme ${
         espacoBarra
-          ? "pb-32 xl:pb-[max(2.5rem,env(safe-area-inset-bottom))]"
-          : "pb-[max(2.5rem,env(safe-area-inset-bottom))]"
+          ? "pb-[calc(--spacing(16)*2+env(safe-area-inset-bottom))] xl:pb-[max(--spacing(12),env(safe-area-inset-bottom))]"
+          : "pb-[max(--spacing(12),env(safe-area-inset-bottom))]"
       }`}
     >
-      {natal && (
-        <p className="mx-auto mb-8 max-w-md border-b border-dourado/50 pb-8 font-titulo text-2xl leading-snug text-dourado-claro">
-          {TEXTOS_NATAL.mensagemFinal}
+      <div className="conteudo">
+        {natal && (
+          <p className="mx-auto mb-8 max-w-md border-b border-dourado/50 pb-8 font-titulo text-2xl leading-snug text-dourado-claro">
+            {TEXTOS_NATAL.mensagemFinal}
+          </p>
+        )}
+        <p className="font-titulo text-3xl text-rosa">{LOJA.nome.split(" – ")[0]}</p>
+        <a
+          href={LOJA.instagram}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex min-h-12 items-center gap-2 rounded-full px-4 font-bold hover:text-rosa"
+        >
+          <IconeInstagram className="size-5" />
+          {usuarioInstagram(LOJA.instagram)}
+        </a>
+        <p className="mt-1 flex items-center justify-center gap-2 text-creme/85">
+          <MapPin aria-hidden className="size-4" />
+          {LOJA.cidade}
         </p>
-      )}
-      <p className="font-titulo text-3xl text-rosa">{LOJA.nome.split(" – ")[0]}</p>
-      <a
-        href={LOJA.instagram}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-4 inline-flex min-h-12 items-center gap-2 rounded-full px-4 font-bold hover:text-rosa"
-      >
-        <IconeInstagram className="size-5" />
-        {usuarioInstagram(LOJA.instagram)}
-      </a>
-      <p className="mt-1 flex items-center justify-center gap-1.5 text-creme/85">
-        <MapPin aria-hidden className="size-4" />
-        {LOJA.cidade}
-      </p>
-      <p className="mt-4 text-sm text-creme/70">Pedidos sujeitos à disponibilidade.</p>
+        <p className="mt-4 text-sm text-creme/70">Pedidos sujeitos à disponibilidade.</p>
+      </div>
     </footer>
   );
 }

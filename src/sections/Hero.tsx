@@ -11,9 +11,9 @@ export function Hero({ principal = true }: { principal?: boolean }) {
   return (
     <section
       aria-labelledby="titulo-hero"
-      className="relative overflow-hidden bg-gradient-to-b from-rosa-claro to-creme"
+      className="secao relative overflow-hidden bg-gradient-to-b from-rosa-claro to-creme"
     >
-      <div className="mx-auto grid max-w-site items-center gap-8 px-4 pt-8 pb-12 md:grid-cols-2 md:gap-12 md:pt-16 md:pb-20 deitado:grid-cols-[1fr_auto] deitado:gap-6 deitado:pt-6 deitado:pb-8">
+      <div className="conteudo grid items-center gap-8 md:grid-cols-2 md:gap-12 deitado:grid-cols-[1fr_auto] deitado:gap-6">
         <div className="text-center md:text-left deitado:text-left">
           {principal ? (
             <h1 id="titulo-hero">
@@ -25,15 +25,19 @@ export function Hero({ principal = true }: { principal?: boolean }) {
           ) : (
             <h2
               id="titulo-hero"
-              className="font-titulo text-5xl leading-tight text-vinho sm:text-6xl deitado:text-4xl"
+              className="font-titulo text-4xl leading-tight text-vinho sm:text-5xl md:text-4xl lg:text-5xl deitado:text-4xl"
             >
               Morangos cravejados
             </h2>
           )}
           <p className="mt-6 text-2xl font-extrabold leading-snug text-verde sm:text-3xl deitado:mt-3 deitado:text-xl">
-            Bombons de morango GIGANTES{" "}
-            <span role="img" aria-label="morango">
-              🍓
+            {/* O emoji fica preso à última palavra (não quebra sozinho). */}
+            Bombons de morango{" "}
+            <span className="whitespace-nowrap">
+              GIGANTES{" "}
+              <span role="img" aria-label="morango">
+                🍓
+              </span>
             </span>
           </p>
           <p className="mx-auto mt-3 max-w-sm text-tinta/80 md:mx-0 deitado:mx-0">
@@ -42,7 +46,7 @@ export function Hero({ principal = true }: { principal?: boolean }) {
           </p>
           <a
             href="#pedido"
-            className="mt-7 inline-flex min-h-14 items-center gap-2 rounded-full bg-vinho px-8 text-lg font-extrabold text-creme shadow-md transition hover:bg-vinho-escuro active:scale-95 deitado:mt-4"
+            className="mt-8 inline-flex min-h-14 items-center gap-2 rounded-full bg-vinho px-8 text-lg font-extrabold text-creme shadow-md transition hover:bg-vinho-escuro active:scale-95 deitado:mt-4"
           >
             Fazer meu pedido
             <ChevronDown aria-hidden className="size-5" />

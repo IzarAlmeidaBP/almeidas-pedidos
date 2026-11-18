@@ -44,17 +44,15 @@ export function Dados() {
   const pendencias = ORDEM.map((campo) => erros[campo]).filter(Boolean);
 
   return (
-    <section
-      id="dados"
-      aria-labelledby="titulo-dados"
-      className="scroll-mt-20 bg-white/60 py-12 xl:mb-12 xl:rounded-3xl xl:px-8"
-    >
+    <section id="dados" aria-labelledby="titulo-dados" className="secao">
       <form
         noValidate
         onSubmit={aoEnviar}
-        className="mx-auto max-w-xl space-y-6 px-4 xl:px-0"
+        className="grid gap-6 md:grid-cols-2 md:rounded-3xl md:bg-white/60 md:p-8"
       >
-        <TituloSecao id="titulo-dados" titulo="Seus dados" />
+        <div className="md:col-span-2">
+          <TituloSecao id="titulo-dados" titulo="Seus dados" />
+        </div>
 
         <Campo id="nome" rotulo="Nome" obrigatorio erro={erroVisivel("nome")}>
           {(props) => (
@@ -73,25 +71,27 @@ export function Dados() {
           )}
         </Campo>
 
-        <p className="flex items-center gap-3 rounded-2xl bg-rosa-claro px-4 py-3 text-tinta">
+        <p className="flex min-h-12 items-center gap-3 rounded-2xl bg-rosa-claro px-4 py-2 text-tinta md:self-end md:text-sm">
           <Truck aria-hidden className="size-6 shrink-0 text-verde" />
-          <span>
+          <span className="text-balance">
             <strong className="text-verde">Entrega</strong> com taxa conforme o bairro.
           </span>
         </p>
 
-        <SeletorBairro
-          bairro={dados.bairro}
-          bairroOutro={dados.bairroOutro}
-          entrega={entrega}
-          erro={erroVisivel("bairro")}
-          aoEscolher={(bairro) => {
-            atualizar("bairro", bairro);
-            tocar("bairro");
-          }}
-          aoDigitarOutro={(nome) => atualizar("bairroOutro", nome)}
-          aoSair={() => tocar("bairro")}
-        />
+        <div className="md:col-span-2">
+          <SeletorBairro
+            bairro={dados.bairro}
+            bairroOutro={dados.bairroOutro}
+            entrega={entrega}
+            erro={erroVisivel("bairro")}
+            aoEscolher={(bairro) => {
+              atualizar("bairro", bairro);
+              tocar("bairro");
+            }}
+            aoDigitarOutro={(nome) => atualizar("bairroOutro", nome)}
+            aoSair={() => tocar("bairro")}
+          />
+        </div>
 
         <Campo
           id="endereco"
@@ -162,7 +162,7 @@ export function Dados() {
             if (!e.currentTarget.contains(e.relatedTarget)) tocar("periodo");
           }}
         >
-          <legend className="mb-1.5 font-bold text-verde">
+          <legend className="mb-2 font-bold text-verde">
             Horário preferido
             <span className="text-vinho" aria-hidden>
               {" "}
@@ -175,7 +175,7 @@ export function Dados() {
               return (
                 <label
                   key={periodo}
-                  className={`flex min-h-12 cursor-pointer items-center justify-center gap-1.5 rounded-2xl border-2 px-2 font-bold transition has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-vinho ${
+                  className={`flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 px-2 font-bold transition has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-vinho ${
                     marcado
                       ? "border-verde bg-verde text-creme"
                       : "border-creme-escuro bg-white text-verde hover:border-verde"
@@ -206,23 +206,25 @@ export function Dados() {
           </p>
         </fieldset>
 
-        <Campo id="observacoes" rotulo="Observações">
-          {(props) => (
-            <textarea
-              {...props}
-              rows={3}
-              inputMode="text"
-              autoComplete="off"
-              autoCapitalize="sentences"
-              enterKeyHint="done"
-              value={dados.observacoes}
-              onChange={(e) => atualizar("observacoes", e.target.value)}
-              placeholder="Ex.: é presente"
-            />
-          )}
-        </Campo>
+        <div className="md:col-span-2">
+          <Campo id="observacoes" rotulo="Observações">
+            {(props) => (
+              <textarea
+                {...props}
+                rows={3}
+                inputMode="text"
+                autoComplete="off"
+                autoCapitalize="sentences"
+                enterKeyHint="done"
+                value={dados.observacoes}
+                onChange={(e) => atualizar("observacoes", e.target.value)}
+                placeholder="Ex.: é presente"
+              />
+            )}
+          </Campo>
+        </div>
 
-        <div className="pt-2">
+        <div className="pt-2 md:col-span-2">
           <button
             type="submit"
             disabled={!valido}

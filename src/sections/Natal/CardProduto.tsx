@@ -61,13 +61,13 @@ export function CardProduto({ produto, formato }: CardProdutoProps) {
   return (
     <article
       aria-labelledby={idTitulo}
-      className="flex flex-col items-center rounded-3xl border-t-4 border-dourado bg-white px-4 pt-6 pb-5 text-center shadow-[0_6px_22px_rgba(12,69,30,0.10)] sm:px-6"
+      className="flex h-full flex-col items-center rounded-3xl border-t-4 border-dourado bg-white px-4 py-6 text-center shadow-[0_6px_22px_rgba(12,69,30,0.10)] sm:px-6"
     >
       <Foto
         src={produto.foto}
         alt={produto.nome}
         sizes="(min-width: 768px) 288px, 75vw"
-        className={`${FOTO[formato]} border-2 border-dourado bg-white object-cover p-1`}
+        className={`${FOTO[formato]} shrink-0 border-2 border-dourado bg-white object-cover p-1`}
       />
       <h3
         id={idTitulo}
@@ -77,19 +77,13 @@ export function CardProduto({ produto, formato }: CardProdutoProps) {
       </h3>
       <p className="mt-2 max-w-md text-tinta/80">{produto.descricao}</p>
       {produto.selo && (
-        <p className="mt-3 rounded-full bg-dourado/20 px-4 py-1 text-sm font-bold text-verde-escuro">
+        <p className="mt-3 rounded-full bg-dourado/20 px-4 py-1 text-sm font-bold text-balance text-verde-escuro">
           {produto.selo}
         </p>
       )}
-      <p
-        key={unitario}
-        className="mt-3 animate-pulsar rounded-full bg-vinho px-6 py-1.5 text-lg font-extrabold tabular-nums text-creme"
-      >
-        {formatarReais(unitario)}
-      </p>
 
       {produto.grupos.length > 0 && (
-        <div className="mt-5 w-full space-y-4">
+        <div className="mt-6 w-full space-y-4">
           {produto.grupos.map((grupo) => (
             <OpcoesProduto
               key={grupo.id}
@@ -103,35 +97,47 @@ export function CardProduto({ produto, formato }: CardProdutoProps) {
         </div>
       )}
 
-      <div className="mt-5 flex w-full flex-col items-center gap-3">
-        <Contador
-          rotulo={produto.nome}
-          valor={quantidade}
-          minimo={1}
-          rotuloMenos={`Diminuir quantidade de ${produto.nome}`}
-          rotuloMais={`Aumentar quantidade de ${produto.nome}`}
-          aoDiminuir={() => setQuantidade((q) => Math.max(1, q - 1))}
-          aoAumentar={() => setQuantidade((q) => q + 1)}
-        />
+      {/* Rodapé do card: preço, quantidade e botão sempre alinhados embaixo. */}
+      <div className="mt-auto w-full pt-6">
+        <div className="flex flex-col items-center gap-3">
+          <p
+            key={unitario}
+            className="animate-pulsar rounded-full bg-vinho px-6 py-2 text-lg font-extrabold whitespace-nowrap tabular-nums text-creme"
+          >
+            {formatarReais(unitario)}
+          </p>
+          <Contador
+            rotulo={produto.nome}
+            valor={quantidade}
+            minimo={1}
+            rotuloMenos={`Diminuir quantidade de ${produto.nome}`}
+            rotuloMais={`Aumentar quantidade de ${produto.nome}`}
+            aoDiminuir={() => setQuantidade((q) => Math.max(1, q - 1))}
+            aoAumentar={() => setQuantidade((q) => q + 1)}
+          />
+        </div>
         <button
           type="button"
           onClick={adicionar}
           disabled={!podeAdicionar}
           aria-describedby={natalAberto && faltando.length > 0 ? idFalta : undefined}
-          className="flex min-h-14 w-full flex-wrap items-center justify-center gap-x-2 rounded-full bg-verde px-5 py-2 text-lg font-extrabold text-creme shadow-sm transition hover:bg-verde-escuro active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-tinta/20 disabled:text-tinta/60 disabled:shadow-none"
+          className="mt-4 flex min-h-14 w-full items-center justify-center gap-3 rounded-full bg-verde px-6 py-2 font-extrabold text-creme shadow-sm transition hover:bg-verde-escuro active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-tinta/20 disabled:text-tinta/60 disabled:shadow-none"
         >
-          {/* Texto e preço não se quebram no meio: em tela estreita o preço desce. */}
-          <span className="flex items-center gap-2 whitespace-nowrap">
-            <ShoppingBag aria-hidden className="size-5 shrink-0" />
-            {natalAberto ? "Adicionar ao pedido" : "Encomendas encerradas"}
-          </span>
-          {natalAberto && (
-            <span className="whitespace-nowrap tabular-nums">
-              · {formatarReais(unitario * quantidade)}
+          <ShoppingBag aria-hidden className="size-5 shrink-0" />
+          {/* Texto e total em linhas próprias: nada quebra no meio em tela estreita. */}
+          <span className="flex flex-col items-start leading-tight">
+            <span className="text-lg whitespace-nowrap">
+              {natalAberto ? "Adicionar ao pedido" : "Encomendas encerradas"}
             </span>
-          )}
+            {natalAberto && (
+              <span className="text-sm whitespace-nowrap tabular-nums opacity-85">
+                {" "}
+                {formatarReais(unitario * quantidade)}
+              </span>
+            )}
+          </span>
         </button>
-        <p aria-live="polite" className="min-h-5 text-sm">
+        <p aria-live="polite" className="mt-2 min-h-10 text-sm text-balance">
           {adicionado ? (
             <span className="inline-flex items-center gap-1 font-bold text-verde">
               <Check aria-hidden className="size-4" />

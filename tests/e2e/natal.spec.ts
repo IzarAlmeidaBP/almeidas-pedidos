@@ -21,6 +21,15 @@ async function tocar(alvo: Locator) {
   await alvo.click();
 }
 
+/** Usa a barra de links (768px+) ou o menu hambúrguer (celular). */
+async function irPeloMenu(page: Page, link: string) {
+  if (largura(page) < 768) await page.getByRole("button", { name: "Abrir menu" }).click();
+  const nav = page.getByRole("navigation", {
+    name: largura(page) < 768 ? "Menu" : "Menu principal",
+  });
+  await nav.getByRole("link", { name: link, exact: true }).click();
+}
+
 const card = (page: Page, nome: string) => page.getByRole("article", { name: nome });
 const botaoAdicionar = (c: Locator) =>
   c.getByRole("button", { name: /Adicionar ao pedido|Encomendas encerradas/ });
@@ -68,7 +77,7 @@ test("Natal: Guirlanda com opções → Mini → Taça → carrinho → checkout
   await marcar(guirlanda, "checkbox", "Docinho de Ninho");
   await expect(guirlanda.getByRole("checkbox", { name: "Oreo" })).toBeDisabled();
   await marcar(guirlanda, "checkbox", "Kinder Bueno +R$ 10,00");
-  await expect(guirlanda.getByText("R$ 145,00", { exact: true })).toBeVisible();
+  await expect(guirlanda.getByText("R$ 145,00", { exact: true }).first()).toBeVisible();
   await esperarSemVazamento(page);
   await page.screenshot({ path: info.outputPath("guirlanda.png") });
   await tocar(botaoAdicionar(guirlanda));
@@ -85,21 +94,25 @@ test("Natal: Guirlanda com opções → Mini → Taça → carrinho → checkout
   // Taça: sem opções.
   await tocar(botaoAdicionar(card(page, "Taça Encanto de Morango")));
 
-  // Total acompanha: barra fixa (celular/tablet) e link do carrinho na navegação.
-  const nav = page.getByRole("navigation", { name: "Categorias" });
-  await expect(nav.getByRole("link", { name: /Carrinho \(4\)/ })).toBeVisible();
+  // Total acompanha: barra fixa (celular/tablet) e carrinho do cabeçalho.
+  await expect(
+    page.getByRole("link", { name: "Carrinho (4)", exact: true }),
+  ).toBeVisible();
   if (largura(page) < COMPUTADOR) {
     const barra = page.getByRole("region", { name: "Resumo do pedido" });
     await expect(barra).toContainText("Ver carrinho (4)");
     await expect(barra).toContainText("R$ 340,00");
   }
 
-  // Navegação fixa: continua no topo da tela depois de rolar até as taças.
-  await nav.getByRole("link", { name: "Taças" }).click();
+  // Cabeçalho fixo: continua no topo da tela depois de ir até as taças pelo menu.
+  await irPeloMenu(page, "Taças");
   await expect(
     page.getByRole("heading", { name: "Sobremesas na Taça" }),
   ).toBeInViewport();
-  await expect.poll(async () => Math.round((await nav.boundingBox())?.y ?? -1)).toBe(0);
+  const cabecalho = page.getByRole("banner");
+  await expect
+    .poll(async () => Math.round((await cabecalho.boundingBox())?.y ?? -1))
+    .toBe(0);
 
   // Carrinho: 3 linhas, com as opções.
   const itens = page.getByRole("list", { name: "Itens do carrinho" });
@@ -327,7 +340,8 @@ test("preços, descrições e opções da página batem com a seção 3 do plane
   for (const e of esperados) {
     const c = card(page, e.nome);
     await expect(c.getByRole("heading", { level: 3 }), e.nome).toHaveText(e.nome);
-    await expect(c.getByText(e.preco, { exact: true }), e.nome).toBeVisible();
+    // O primeiro é o preço do card; o botão repete o total da quantidade.
+    await expect(c.getByText(e.preco, { exact: true }).first(), e.nome).toBeVisible();
     await expect(c.getByText(e.descricao, { exact: true }), e.nome).toBeVisible();
     const rotulos = (await c.locator("label").allInnerTexts()).map((t) =>
       t.replace(/\s+/g, " ").trim(),
@@ -346,20 +360,4 @@ test("preços, descrições e opções da página batem com a seção 3 do plane
     ),
   ).toBeVisible();
   await expect(page.getByText(/ilustrativa/i)).toHaveCount(0);
-});
-
-test("navegação fixa cabe na tela, sem rolagem lateral", async ({ page }) => {
-  await abrir(page);
-  const lista = page.getByRole("navigation", { name: "Categorias" }).getByRole("list");
-  const medidas = await lista.evaluate((ul) => ({
-    rola: ul.scrollWidth > ul.clientWidth,
-    direita: Math.max(...[...ul.children].map((li) => li.getBoundingClientRect().right)),
-    tela: document.documentElement.clientWidth,
-  }));
-  expect(medidas.rola).toBe(false);
-  expect(medidas.direita).toBeLessThanOrEqual(medidas.tela);
-  for (const link of await lista.getByRole("link").all()) {
-    const caixa = await link.boundingBox();
-    expect(caixa?.height ?? 0).toBeGreaterThanOrEqual(44);
-  }
 });

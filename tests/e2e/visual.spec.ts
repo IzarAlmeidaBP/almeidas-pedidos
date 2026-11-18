@@ -24,9 +24,14 @@ for (const tela of TELAS) {
       await abrir(page);
       await page.evaluate(() => document.fonts.ready);
       await esperarSemVazamento(page);
-      // A navegação fixa do Natal tem rolagem própria (ignorada acima): confere à parte.
-      const nav = page.getByRole("navigation", { name: "Categorias" }).getByRole("list");
-      expect(await nav.evaluate((ul) => ul.scrollWidth <= ul.clientWidth)).toBe(true);
+      // Cabeçalho: logo, carrinho e (no celular) o hambúrguer dentro da tela.
+      for (const el of [
+        page.getByRole("link", { name: /início$/ }),
+        page.getByRole("link", { name: /^Carrinho/ }),
+      ]) {
+        const caixa = await el.boundingBox();
+        expect((caixa?.x ?? -1) + (caixa?.width ?? 0)).toBeLessThanOrEqual(tela.width);
+      }
       await page.screenshot({ path: info.outputPath(`${tela.nome}-inicio.png`) });
 
       await montarPedidoCompleto(page);

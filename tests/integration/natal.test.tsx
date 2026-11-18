@@ -40,12 +40,26 @@ describe("Natal 2026: página", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("✦ Encomendas até 18 de dezembro ✦")).toBeInTheDocument();
 
-    const nav = screen.getByRole("navigation", { name: "Categorias" });
+    const nav = screen.getByRole("navigation", { name: "Menu principal" });
     expect(
       within(nav)
         .getAllByRole("link")
-        .map((l) => l.getAttribute("href")),
-    ).toEqual(["#guirlandas", "#tacas", "#pedido", "#carrinho"]);
+        .map((l) => [l.textContent, l.getAttribute("href")]),
+    ).toEqual([
+      ["Natal 2026", "#natal"],
+      ["Guirlandas", "#guirlandas"],
+      ["Taças", "#tacas"],
+      ["Morangos", "#pedido"],
+      ["Como encomendar", "#como-encomendar"],
+    ]);
+    // Cada link leva a uma seção que existe.
+    for (const id of ["natal", "guirlandas", "tacas", "pedido", "como-encomendar"])
+      expect(document.getElementById(id), id).not.toBeNull();
+    // Carrinho fora do menu, com contador.
+    expect(screen.getByRole("link", { name: "Carrinho (0)" })).toHaveAttribute(
+      "href",
+      "#carrinho",
+    );
 
     expect(screen.getByText("Faça seu pedido!")).toBeInTheDocument();
     expect(screen.getByText("Somente entrega.")).toBeInTheDocument();
@@ -63,7 +77,8 @@ describe("Natal 2026: página", () => {
       "Taça Encanto de Morango": "R$ 125,00",
     };
     for (const [nome, preco] of Object.entries(precos))
-      expect(within(card(nome)).getByText(preco)).toBeInTheDocument();
+      // O primeiro é o preço do card; o botão repete o total da quantidade.
+      expect(within(card(nome)).getAllByText(preco)[0]).toHaveClass("bg-vinho");
     expect(
       within(card("Mini Guirlanda")).getByText(
         "🎁 Acompanha uma caixinha linda para presentear",
@@ -118,17 +133,17 @@ describe("Natal 2026: opções do produto", () => {
     renderizar();
     const g = card("Guirlanda de Natal");
     await user.click(within(g).getByRole("checkbox", { name: "Kinder Bueno +R$ 10,00" }));
-    expect(within(g).getByText("R$ 145,00")).toBeInTheDocument();
+    expect(within(g).getAllByText("R$ 145,00")[0]).toHaveClass("bg-vinho");
     await user.click(
       within(g).getByRole("checkbox", { name: "Ferrero Rocher +R$ 10,00" }),
     );
-    expect(within(g).getByText("R$ 155,00")).toBeInTheDocument();
+    expect(within(g).getAllByText("R$ 155,00")[0]).toHaveClass("bg-vinho");
     await user.click(
       within(g).getByRole("button", {
         name: "Aumentar quantidade de Guirlanda de Natal",
       }),
     );
-    expect(adicionar(g)).toHaveTextContent("Adicionar ao pedido· R$ 310,00");
+    expect(adicionar(g)).toHaveTextContent("Adicionar ao pedido R$ 310,00");
   });
 });
 
@@ -158,11 +173,7 @@ describe("Natal 2026: carrinho e mensagem", () => {
     expect(within(barra).getByRole("link")).toHaveTextContent(
       "Ver carrinho (4)R$ 340,00",
     );
-    expect(
-      within(screen.getByRole("navigation", { name: "Categorias" })).getByRole("link", {
-        name: /Carrinho \(4\)/,
-      }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Carrinho (4)" })).toBeInTheDocument();
 
     const itens = within(screen.getByRole("list", { name: "Itens do carrinho" }));
     expect(itens.getAllByRole("listitem")).toHaveLength(3);
@@ -377,7 +388,14 @@ describe("Natal 2026: campanha desligada (NATAL.ativo = false)", () => {
   it("esconde tudo do Natal e o site volta ao topo dos morangos", () => {
     renderizar({ regras: { ...NATAL, ativo: false } });
     expect(screen.queryByRole("heading", { name: "Natal 2026" })).toBeNull();
-    expect(screen.queryByRole("navigation", { name: "Categorias" })).toBeNull();
+    // O cabeçalho continua, só com o link dos morangos e o carrinho.
+    const nav = screen.getByRole("navigation", { name: "Menu principal" });
+    expect(
+      within(nav)
+        .getAllByRole("link")
+        .map((l) => l.textContent),
+    ).toEqual(["Morangos"]);
+    expect(screen.getByRole("link", { name: "Carrinho (0)" })).toBeInTheDocument();
     expect(screen.queryByRole("article")).toBeNull();
     expect(screen.queryByText(/Feliz Natal/)).toBeNull();
     expect(

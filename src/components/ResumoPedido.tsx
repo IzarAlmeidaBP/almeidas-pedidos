@@ -25,7 +25,7 @@ export function ResumoPedido() {
         </div>
       )}
 
-      <dl className="mt-4 space-y-1.5 border-t border-creme-escuro pt-4 text-sm text-tinta/80">
+      <dl className="mt-4 space-y-2 border-t border-creme-escuro pt-4 text-sm text-tinta/80">
         <div className="flex justify-between gap-3">
           <dt>Subtotal</dt>
           <dd className="tabular-nums">{formatarReais(totais.subtotal)}</dd>
@@ -62,7 +62,7 @@ export function ResumoPedido() {
         <button
           type="button"
           onClick={() => dispatch({ type: "irParaPagamento" })}
-          className="mt-5 flex min-h-12 w-full items-center justify-center rounded-full bg-vinho px-5 font-extrabold text-creme transition hover:bg-vinho-escuro"
+          className="mt-6 flex min-h-12 w-full items-center justify-center rounded-full bg-vinho px-6 font-extrabold text-creme transition hover:bg-vinho-escuro"
         >
           Finalizar pedido
         </button>
@@ -71,7 +71,7 @@ export function ResumoPedido() {
           href={
             totais.itens === 0 ? (regras.ativo ? "#guirlandas" : "#pedido") : "#dados"
           }
-          className="mt-5 flex min-h-12 w-full items-center justify-center rounded-full border-2 border-verde px-5 font-extrabold text-verde transition hover:bg-verde/5"
+          className="mt-6 flex min-h-12 w-full items-center justify-center rounded-full border-2 border-verde px-6 font-extrabold text-verde transition hover:bg-verde/5"
         >
           {totais.itens === 0 ? "Escolher produtos" : "Preencher seus dados"}
         </a>
